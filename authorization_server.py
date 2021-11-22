@@ -21,8 +21,10 @@ oauth_config = config['FITBIT']
 
 sqlite_config = config['SQLITE']
 
+os.makedirs(os.path.join(sqlite_config['DATABASE_LOCATION']), exist_ok=True)
+
 app.secret_key = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(sqlite_config['DATABASE'])
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(os.path.join(sqlite_config['DATABASE_LOCATION'], sqlite_config['DATABASE_NAME']))
 
 db = SQLAlchemy(app)
 

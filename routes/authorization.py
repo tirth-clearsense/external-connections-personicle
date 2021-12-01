@@ -9,13 +9,13 @@ import os
 import base64
 from datetime import datetime
 
-
+proj_loc = ".."
 PUBLIC_IP='http://127.0.0.1'
 REDIR_URL = PUBLIC_IP+"/oauth/access_token"
 
-app = Flask(__name__)
-
-db = SQLAlchemy(app)
+config = configparser.ConfigParser()
+config.read(os.path.join(proj_loc, 'config.ini'))
+oauth_config = config['FITBIT']
 
 from user_credential_manager import add_access_token
 
@@ -102,7 +102,3 @@ def get_access_token():
     # return resp
     return result
 
-
-if __name__ == "__main__":
-    db.create_all()
-    app.run(debug=True)

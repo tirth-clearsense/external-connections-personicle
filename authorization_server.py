@@ -95,14 +95,19 @@ def get_access_token():
     pprint.pprint(resp)
 
     # store a user's access token and refresh tokens in a sqlite db
-    user_record = add_access_token(user_id, service_name='fitbit', access_token=resp['access_token'], expires_in=resp['expires_in'],
+    action ,user_record = add_access_token(user_id, service_name='fitbit', access_token=resp['access_token'], expires_in=resp['expires_in'],
                             created_at=datetime.utcnow())
 
     try:
-        db.session.add(user_record)
+        if action == 'add':
+            db.session.add(user_record)
+        else:
+            pass
         result = jsonify(success=True)
+        db.session.commit()
     except Exception as e:
         print(e)
+        # raise e
         db.session.rollback()
         result = jsonify(success=False)
     # return resp

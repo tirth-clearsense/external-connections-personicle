@@ -30,6 +30,10 @@ class ExternalConnections(db.Model):
     external_user_id = db.Column(db.String(50))
     refresh_token = db.Column(db.String(500))
 
+    # usage fields
+    last_accessed_at = db.Column(db.DateTime, nullable=True)
+    scope=db.Column(db.String(500), nullable=True)
+
     def __repr__(self) -> str:
-        return f"UserTokes('{self.userId}', '{self.service}', '{self.expires_in}', '{self.created_at}')"
+        return f"UserToken('{self.userId}', '{self.service}', '{self.expires_in}', '{self.created_at}')"
 

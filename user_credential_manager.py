@@ -33,7 +33,10 @@ def add_access_token(personicle_user_id, **kwargs):
         user_record.access_token = kwargs['access_token']
         user_record.expires_in = kwargs['expires_in']
         user_record.created_at = kwargs['created_at']
+
         user_record.refresh_token = kwargs.get("refresh_token", None)
+        user_record.external_user_id = kwargs.get("external_user_id", None)
+        user_record.scope = kwargs.get("scope", None)
 
         return "update", user_record
     else:

@@ -8,7 +8,7 @@ import configparser
 import os
 import base64
 from datetime import datetime
-
+import threading
 
 PUBLIC_IP='http://127.0.0.1'
 REDIR_URL = PUBLIC_IP+"/oauth/access_token"
@@ -18,7 +18,7 @@ app = Flask(__name__)
 db = SQLAlchemy(app)
 
 from user_credential_manager import add_access_token
-
+from data_import_modules import IMPORT_MODULES
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -85,7 +85,8 @@ def get_access_token():
 
     # store a user's access token and refresh tokens in a sqlite db
     action ,user_record = add_access_token(user_id, service_name='fitbit', access_token=resp['access_token'], expires_in=resp['expires_in'],
-                            created_at=datetime.utcnow())
+                            created_at=datetime.utcnow(), external_user_id=resp['user_id'], refresh_token=resp['refresh_token'],
+                            scope=resp['scope'])
 
     try:
         if action == 'add':
@@ -100,6 +101,9 @@ def get_access_token():
         db.session.rollback()
         result = jsonify(success=False)
     # return resp
+    th = threading.Thread(target=IMPORT_MODULES['fitbit'], args=(user_id, ))
+    th.start()
+
     return result
 
 

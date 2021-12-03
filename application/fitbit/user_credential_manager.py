@@ -1,4 +1,4 @@
-from models import ExternalConnections
+from application.models.external_connections import ExternalConnections
 
 def add_access_token(personicle_user_id, **kwargs):
     """

@@ -29,7 +29,7 @@ def send_record(args):
     else:
         print(f"Successfully producing record value - {value} to topic - {args.topic}")
 
-    # producer.flush()
+    producer.flush()
     return
 
 

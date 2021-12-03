@@ -1,7 +1,9 @@
 import json
-from .send_record import send_record
+from producer.send_record import send_record
 from .utils.fitbit_parsers import *
 import os
+
+# set Kafka listener port from config file
 
 allowed_streams = ['heartrate', 'activity']
 
@@ -18,7 +20,7 @@ SCHEMA_MAPPING = {
 
 TOPIC_MAPPING = {
     'heartrate': 'fitbit_stream_heartrate',
-    'activity': 'fitbit_event_activity'
+    'activity': 'fitbit_events_activity'
 }
 
 

@@ -1,33 +1,31 @@
-from flask import Flask, jsonify
+from flask import jsonify
 from flask import request, session, redirect
-from flask_sqlalchemy import SQLAlchemy
+from flask import Blueprint
 
 import requests
 import pprint
-import configparser
-import os
 import base64
 from datetime import datetime
 import threading
 
-PUBLIC_IP='http://127.0.0.1'
-REDIR_URL = PUBLIC_IP+"/oauth/access_token"
+from application.config import FITBIT_CONFIG
+oauth_config = FITBIT_CONFIG
 
-app = Flask(__name__)
+from .user_credential_manager import add_access_token
+from .data_import_module import initiate_fitbit_data_import
 
-db = SQLAlchemy(app)
+# from application import app
+from application.models.base import db
 
-from user_credential_manager import add_access_token
-from data_import_modules import IMPORT_MODULES
+fitbit_routes = Blueprint("fitbit_routes", __name__)
 
-
-@app.route('/', methods=["GET", "POST"])
-@app.route('/index', methods=["GET", "POST"])
-@app.route('/user-dashboard', methods=['GET', 'POST'])
+@fitbit_routes.route('/fitbit', methods=["GET", "POST"])
+# @app.route('/index', methods=["GET", "POST"])
+# @app.route('/user-dashboard', methods=['GET', 'POST'])
 def dashboard_home():
     return True
 
-@app.route('/fitbit-connection', methods=['GET', 'POST'])
+@fitbit_routes.route('/fitbit/connection', methods=['GET', 'POST'])
 def fitbit_connection():
     session_id = True #request['data']['session_id']
     session.clear()
@@ -35,12 +33,12 @@ def fitbit_connection():
     session['user_id'] = session_id
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
-    return redirect('/oauth/code-callback')
+    return redirect('/fitbit/oauth/code-callback')
     
 
 # OAuth call back with the client token
 # store this and use to get access code
-@app.route('/oauth/code-callback/')
+@fitbit_routes.route('/fitbit/oauth/code-callback/')
 def get_token():
     scope = "activity%20heartrate%20location%20nutrition%20profile%20sleep%20weight"
     print(session.keys())
@@ -55,7 +53,7 @@ def get_token():
 
 
 # Store the access token in sqlite db and initiate data import
-@app.route('/oauth/access-token/')
+@fitbit_routes.route('/fitbit/oauth/access-token/')
 def get_access_token():
     # need personicle user id in session
     user_id = "test_id"
@@ -84,9 +82,9 @@ def get_access_token():
     pprint.pprint(resp)
 
     # store a user's access token and refresh tokens in a sqlite db
+    # db.create_all()
     action ,user_record = add_access_token(user_id, service_name='fitbit', access_token=resp['access_token'], expires_in=resp['expires_in'],
-                            created_at=datetime.utcnow(), external_user_id=resp['user_id'], refresh_token=resp['refresh_token'],
-                            scope=resp['scope'])
+                            created_at=datetime.utcnow(), external_user_id=resp['user_id'], refresh_token=resp['refresh_token'])
 
     try:
         if action == 'add':
@@ -101,12 +99,8 @@ def get_access_token():
         db.session.rollback()
         result = jsonify(success=False)
     # return resp
-    th = threading.Thread(target=IMPORT_MODULES['fitbit'], args=(user_id, ))
-    th.start()
-
+    # th = threading.Thread(target=initiate_fitbit_data_import, args=(user_id,))
+    initiate_fitbit_data_import(user_id)
+    # th.start()
     return result
 
-
-if __name__ == "__main__":
-    db.create_all()
-    app.run(debug=True)

@@ -1,11 +1,12 @@
 from confluent_kafka import avro
 import os
 from pathlib import Path
+import application
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
 
-PROJ_LOC = Path(dir_path).parent.parent
+PROJ_LOC = application.config.PROJ_LOC
 
 def load_avro_schema_from_file(schema_file):
     key_schema_string = """

@@ -1,16 +1,15 @@
-from models import ExternalConnections
+from application.models.external_connections import ExternalConnections
 import requests
-import configparser
 from datetime import datetime
 import pprint
 import json
 
-from producer import fitbit_upload
+from . import fitbit_upload
 
 FITBIT_ACTIVITIES_ENDPOINT = "/1/user/{user_id}/activities/list.json"
 
-config = configparser.ConfigParser()
-config.read('config.ini')
+from application.config import FITBIT_CONFIG
+# from application import app
 
 def fitbit_activity_import(personicle_user_id, fitbit_user_id, access_token, last_accessed_at, fitbit_oauth_config):
     activities_api_endpoint = fitbit_oauth_config['API_ENDPOINT'] + FITBIT_ACTIVITIES_ENDPOINT.format(user_id=fitbit_user_id)
@@ -70,12 +69,14 @@ def initiate_fitbit_data_import(personicle_user_id):
     Returns:
     None
     """
-    fitbit_oauth_config = config['FITBIT']
+    fitbit_oauth_config = FITBIT_CONFIG
+    # with app.app_context():
     user_credentials = ExternalConnections.query.filter_by(userId=personicle_user_id, service='fitbit').all()
     if len(user_credentials) == 0:
         return None
     assert len(user_credentials) == 1, "Duplicate fitbit credentials for user: {}".format(personicle_user_id)
 
+    # with app.app_context():
     user_record = ExternalConnections.query.filter_by(userId=personicle_user_id, service='fitbit').one()
 
     fitbit_user_id = user_record.external_user_id

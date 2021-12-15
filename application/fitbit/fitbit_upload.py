@@ -1,7 +1,11 @@
 import json
 from producer.send_record import send_record
+from producer.send_records_azure import send_records_to_eventhub
+
 from .utils.fitbit_parsers import *
 import os
+from application.config import KAFKA_CONFIG
+import asyncio
 
 # set Kafka listener port from config file
 
@@ -35,25 +39,32 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
     record_formatter = RECORD_PROCESSING[stream_name]
     schema = SCHEMA_MAPPING[stream_name]
     topic = TOPIC_MAPPING[stream_name]
+    formatted_records = []
     for record in records:
         formatted_record = record_formatter(record, personicle_user_id)
+        formatted_records.append(formatted_record)
         print(formatted_record)
         count += 1
 
         # send the record and schema to producer
-        args = Bunch({
-                    'topic': topic,
-                    'schema_file': schema,
-                    'record_value': json.dumps(formatted_record),
-                    "bootstrap_servers": "localhost:9092",
-                    "schema_registry": "http://localhost:8081",
-                    "record_key": None
-                })
-        print(args.schema_file)
-        send_record(args)
+        # args = Bunch({
+        #             'topic': topic,
+        #             'schema_file': schema,
+        #             'record_value': json.dumps(formatted_record),
+        #             "bootstrap_servers": KAFKA_CONFIG['BOOTSTRAP_SERVERS'],
+        #             "sasl_password":KAFKA_CONFIG['SASL_PASSWORD'],
+        #             "schema_registry": KAFKA_CONFIG['SCHEMA_REGISTRY'],
+        #             "record_key": None
+        #         })
+        # print(args.schema_file)
+        # send_record(args)
+        
 
         if limit is not None and count <= limit:
             break
+    # loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop(loop)
+    send_records_to_eventhub("event_schema.avsc", formatted_records, "testhub-new")
 
 
 def send_records_from_file_to_producer(filename, stream_name, limit = None):
@@ -86,7 +97,7 @@ def send_records_from_file_to_producer(filename, stream_name, limit = None):
             break
 
 if __name__ == "__main__":
-    send_records_to_producer("./pmdata/p01/fitbit/heart_rate.json", "heartrate")
+    send_records_from_file_to_producer("./pmdata/p01/fitbit/heart_rate.json", "heartrate")
     
     # Test Command
     # python send_record.py --topic test_event --schema-file quick-test-schema.avsc --record-value '{"id": 999, "product": "foo", "quantity": 100, "price": 50}'

@@ -15,3 +15,7 @@ __app_config.read(os.path.join(PROJ_LOC,'config.ini'))
 FITBIT_CONFIG = __app_config['FITBIT']
 
 AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro")
+
+KAFKA_CONFIG = __app_config['KAFKA']
+
+EVENTHUB_CONFIG = __app_config['EVENTHUB']

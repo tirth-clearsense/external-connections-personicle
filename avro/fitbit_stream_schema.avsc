@@ -25,7 +25,8 @@
         },
         {
             "name": "confidence",
-            "type": "int"
+            "type": "int",
+            "default": -1
         }
     ]
 }

@@ -5,7 +5,7 @@ import os
 from . import config
 
 def create_app():
-    from . import models, fitbit
+    from . import models, fitbit, google_fit
     app = Flask(__name__)
     app.secret_key = os.urandom(24)
     os.makedirs(config.SQLITE_DATABASE_LOCATION, exist_ok=True)
@@ -14,6 +14,7 @@ def create_app():
 
     models.init_app(app)
     fitbit.init_app(app)
+    google_fit.init_app(app)
     # services.init_app(app)
     return app
 

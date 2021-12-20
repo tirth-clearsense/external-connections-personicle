@@ -4,14 +4,17 @@ from flask.json import jsonify
 from flask.wrappers import Response
 from authlib.integrations.flask_client import OAuth
 import os
-import pprint
+from datetime import datetime
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 
+from application.utils.user_credentials_manager import add_access_token
 from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC
 oauth_config = GOOGLE_FIT_CONFIG
 oauth = OAuth()
+
+from .google_fit_import_module import google_fit_data_import
 
 APP_SCOPE = [
         "https://www.googleapis.com/auth/fitness.sleep.read",
@@ -70,6 +73,9 @@ def google_fit_connection():
 
 @google_API_routes.route("/google-fit/oauth/access_token", methods=['GET'])
 def get_access_token():
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return Response("User not logged in", 401)
     error_resp = request.args.get("error", None)
     if error_resp:
         return Response(error_resp, 401)
@@ -102,7 +108,26 @@ def get_access_token():
         'client_secret': credentials.client_secret,
         'scopes': credentials.scopes,
         'expires_at': credentials.expiry
-        }
+    }
 
     print(session)
-    return Response(jsonify({"success": True}), 200)
+    action ,user_record = add_access_token(user_id, service_name='google-fit', access_token=credentials.token, expires_in=credentials.expiry,
+                            created_at=datetime.utcnow(), external_user_id=None, refresh_token=credentials.refresh_token)
+
+    try:
+        if action == 'add':
+            db.session.add(user_record)
+        else:
+            pass
+        result = jsonify(success=True)
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        # raise e
+        db.session.rollback()
+        result = jsonify(success=False)
+    # return resp
+    # th = threading.Thread(target=initiate_fitbit_data_import, args=(user_id,))
+    google_fit_data_import(user_id)
+    
+    return result

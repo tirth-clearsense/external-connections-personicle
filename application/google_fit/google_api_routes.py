@@ -4,7 +4,9 @@ from flask.json import jsonify
 from flask.wrappers import Response
 from authlib.integrations.flask_client import OAuth
 import os
+import pprint
 from datetime import datetime
+import threading
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -14,7 +16,7 @@ from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC
 oauth_config = GOOGLE_FIT_CONFIG
 oauth = OAuth()
 
-from .google_fit_import_module import google_fit_data_import
+from .google_fit_import_module import initiate_google_fit_data_import
 
 APP_SCOPE = [
         "https://www.googleapis.com/auth/fitness.sleep.read",
@@ -63,6 +65,8 @@ def google_fit_connection():
     # Use kwargs to set optional request parameters.
     authorization_url, state = flow.authorization_url(
         access_type='offline', include_granted_scopes='true', enable_reauth_refresh='true')
+
+    print(authorization_url)
     # Enable offline access so that you can refresh an access token without
     # re-prompting the user for permission. Recommended for web server apps.
         
@@ -110,7 +114,8 @@ def get_access_token():
         'expires_at': credentials.expiry
     }
 
-    print(session)
+    # pprint.pprint(credentials.__dict__)
+    pprint.pprint(session['credentials'])
     action ,user_record = add_access_token(user_id, service_name='google-fit', access_token=credentials.token, expires_in=credentials.expiry,
                             created_at=datetime.utcnow(), external_user_id=None, refresh_token=credentials.refresh_token)
 
@@ -127,7 +132,8 @@ def get_access_token():
         db.session.rollback()
         result = jsonify(success=False)
     # return resp
-    # th = threading.Thread(target=initiate_fitbit_data_import, args=(user_id,))
-    google_fit_data_import(user_id)
+    # data_import_thread = threading.Thread(target=initiate_google_fit_data_import, args=(user_id,))
+    # data_import_thread.start()
+    initiate_google_fit_data_import(user_id)
     
     return result

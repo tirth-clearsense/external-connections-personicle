@@ -134,6 +134,8 @@ dmypy.json
 # Configuration files
 
 *.ini
+config_json/*
+tests/*
 
 userDatabase/*
 database/*

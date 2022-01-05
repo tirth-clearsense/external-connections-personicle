@@ -14,9 +14,6 @@ SESSIONS_DATE_OFFSET = timedelta(days=7)
 from application.config import GOOGLE_FIT_CONFIG
 # from application import app
 
-def google_fit_activity_import(*args, **kwargs):
-    pass
-
 
 def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_token, last_accessed_at, google_fit_oauth_config):
     """
@@ -24,15 +21,24 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
     Google fit sleep get endpoint: https://www.googleapis.com/fitness/v1/users/me/sessions?startTime=2019-12-05T00:00.000Z&endTime=2019-12-17T23:59:59.999Z&activityType=72
     """
     google_fit_sleep_endpoint = GOOGLE_FIT_SESSIONS_ENDPOINT.format(activity_type=SLEEP_ACTIVITY)
-    start_time = datetime.utcnow() - SESSIONS_DATE_OFFSET if last_accessed_at is None else last_accessed_at
+    if last_accessed_at is None:
+        start_time = None
+        end_time = datetime.utcnow()
+    else:
+        start_time = last_accessed_at
+        end_time = None
     count_sessions = 0
-    while start_time <= datetime.utcnow():
+    repeat_token = None
+    call_api = True
+    while call_api:
         end_time = start_time + SESSIONS_DATE_OFFSET
-        query_parameters = {
-            "startTime": start_time.strftime("%Y-%m-%dT%H:%M:%S%zZ"),
-            "endTime": end_time.strftime("%Y-%m-%dT%H:%M:%S%zZ")
-            # "activityType": SLEEP_ACTIVITY
-        }
+        query_parameters = {}
+        if start_time:
+            query_parameters['startTime'] = start_time.strftime("%Y-%m-%dT%H:%M:%S%zZ")
+        if end_time:
+            query_parameters['endTime'] = end_time.strftime("%Y-%m-%dT%H:%M:%S%zZ")
+        if repeat_token:
+            query_parameters['pageToken'] = repeat_token
 
         query_header = {
             "accept": "application/json",
@@ -44,7 +50,10 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
 
         pprint.pprint(activities)
         # SEND DATA TO KAFKA 
-        start_time = end_time
+        call_api = activities.get('hasMoreData', False)
+        repeat_token = activities.get('nextPageToken', None)
+
+        # start_time = end_time
         count_sessions += len(activities['session'])
     return True, count_sessions
 

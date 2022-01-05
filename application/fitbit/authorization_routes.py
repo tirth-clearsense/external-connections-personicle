@@ -19,6 +19,11 @@ from application.models.base import db
 
 fitbit_routes = Blueprint("fitbit_routes", __name__)
 
+
+@fitbit_routes.route('/', methods=['GET'])
+def test_route():
+    return "Testing connections server"
+
 @fitbit_routes.route('/fitbit', methods=["GET", "POST"])
 # @app.route('/index', methods=["GET", "POST"])
 # @app.route('/user-dashboard', methods=['GET', 'POST'])

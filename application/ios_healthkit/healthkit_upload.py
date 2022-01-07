@@ -1,26 +1,23 @@
 import json
 from producer.send_record import send_record
-from .utils.fitbit_parsers import *
+from .utils.healthkit_parsers import *
 import os
 
 # set Kafka listener port from config file
 
-allowed_streams = ['heartrate', 'activity']
+allowed_streams = ['sleep']
 
 RECORD_PROCESSING = {
-    'heartrate': format_heartrate,
-    'activity': healthkit_activity_parser
+    'sleep': format_healthkit_sleep_event
 }
 
 SCHEMA_LOC = './avro'
 SCHEMA_MAPPING = {
-    'heartrate': 'healthkit_stream_schema.avsc',
-    'activity': 'event_schema.avsc'
+    'sleep': 'event_schema.avsc'
 }
 
 TOPIC_MAPPING = {
-    'heartrate': 'healthkit_stream_heartrate',
-    'activity': 'healthkit_events_activity'
+    'sleep': 'healthkit_events_sleep'
 }
 
 

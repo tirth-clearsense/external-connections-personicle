@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python3 -m venv ingestion_server
-source ingestion_server/bin/activate
+. ingestion_server/bin/activate
 
 pip3 install -r requirements.txt
 echo "Starting flask server"

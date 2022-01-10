@@ -1,3 +1,5 @@
+#!/bin/bash
+
 python3 -m venv ingestion_server
 source ingestion_server/bin/activate
 

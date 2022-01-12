@@ -15,6 +15,7 @@ __app_config.read(os.path.join(PROJ_LOC,'config.ini'))
 HOST_CONFIG = __app_config['HOST']
 FITBIT_CONFIG = __app_config['FITBIT']
 IOS_APP_CONFIG = __app_config['IOS_APP']
+GOOGLE_FIT_CONFIG = __app_config['GOOGLE_FIT']
 
 AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro")
 

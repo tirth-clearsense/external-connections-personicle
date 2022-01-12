@@ -11,6 +11,9 @@ import threading
 # from application import app
 from application.models.base import db
 from . import healthkit_upload
+from application.config import IOS_APP_CONFIG
+config = IOS_APP_CONFIG
+
 
 healthkit_routes = Blueprint("healthkit_routes", __name__)
 
@@ -26,17 +29,20 @@ def fitbit_connection():
     if not request.json or not 'data' in request.json:
         abort(400)
 
-    data = request.json['data']
-
-    print(data)
-
-    healthkit_upload.send_records_to_producer('user_id', data, 'sleep', limit=5)
-
     result = {
-        'success': True
+        'success': False
     }
 
 
-    return jsonify(result), 201
+    if key in request.json:
+        if request.json['test_key'] == config['KEY']:
+            data = request.json['data']
+            healthkit_upload.send_records_to_producer('user_id', data, 'sleep', limit=5)
+            result = {
+                'success': True
+            }
 
+            return jsonify(result), 201
+
+    return jsonify(result), 400
 

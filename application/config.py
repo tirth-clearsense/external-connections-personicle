@@ -12,6 +12,7 @@ SQLITE_DATABASE_NAME="user_access_tokens.db"
 __app_config = configparser.ConfigParser()
 __app_config.read(os.path.join(PROJ_LOC,'config.ini'))
 
+HOST_CONFIG = __app_config['HOST']
 FITBIT_CONFIG = __app_config['FITBIT']
 IOS_APP_CONFIG = __app_config['IOS_APP']
 

@@ -13,5 +13,6 @@ __app_config = configparser.ConfigParser()
 __app_config.read(os.path.join(PROJ_LOC,'config.ini'))
 
 FITBIT_CONFIG = __app_config['FITBIT']
+IOS_APP_CONFIG = __app_config['IOS_APP']
 
 AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro")

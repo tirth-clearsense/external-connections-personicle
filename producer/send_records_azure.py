@@ -23,15 +23,16 @@ def send_records_to_eventhub(schema_file, records, eventhub_name):
     credential = DefaultAzureCredential()
     # Namespace should be similar to: '<your-eventhub-namespace>.servicebus.windows.net'
     
-    fully_qualified_namespace = "personicle-eventhub-dev.servicebus.windows.net" #EVENTHUB_CONFIG['SCHEMA_REGISTRY_FQNS']
-    group_name = "event_schema" #EVENTHUB_CONFIG['SCHEMA_REGISTRY_GROUP']
+    fully_qualified_namespace = EVENTHUB_CONFIG['SCHEMA_REGISTRY_FQNS']
+    group_name = EVENTHUB_CONFIG['SCHEMA_REGISTRY_GROUP']
     schema_registry_client = SchemaRegistryClient(fully_qualified_namespace, credential)
     serializer = AvroSerializer(client=schema_registry_client, group_name=group_name, auto_register_schemas=True)
 
     # define event hub producer client
+    print("connection string: {}".format(EVENTHUB_CONFIG['CONNECTION_STRING']))
     eventhub_producer = EventHubProducerClient.from_connection_string(
-        conn_str="Endpoint=sb://personicle-eventhub-dev.servicebus.windows.net/;SharedAccessKeyName=testhub-policy-s1;SharedAccessKey=/WtIDcSPgtcJXOS009LgYhKSPGUTmoJisRVRbmYZllo=;EntityPath=testhub-new",
-        #"Endpoint=sb://personicle-eventhub-dev.servicebus.windows.net/;SharedAccessKeyName=test_data_connection_policy;SharedAccessKey=eGCTslk1BxuLFN4rmAnTAY5QwSDQLl3xFYH8zvpy5ac=;EntityPath=test_hub", #EVENTHUB_CONFIG['CONNECTION_STRING'],
+        conn_str= 
+        EVENTHUB_CONFIG['CONNECTION_STRING'],
         eventhub_name= eventhub_name
     )
 
@@ -68,14 +69,7 @@ def produce_records(records, producer, serializer, schema_string, credentials):
     print('Send is done.')
 
 if __name__ == "__main__":
-    # records = [{
-    #     "user_id": "test_user",
-    #     "value": 149
-    # },
-    # {
-    #     "user_id": "test_user1",
-    #     "value": 1987
-    # }]
+
 
     records = [ {"user_id": "test_user{}".format(i), "value": 150+i} for i in range(500)]
 

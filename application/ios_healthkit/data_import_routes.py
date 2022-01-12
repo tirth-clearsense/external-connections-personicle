@@ -35,7 +35,7 @@ def fitbit_connection():
 
 
     if key in request.json:
-        if request.json['test_key'] == config['key']:
+        if request.json['test_key'] == config['KEY']:
             data = request.json['data']
             healthkit_upload.send_records_to_producer('user_id', data, 'sleep', limit=5)
             result = {

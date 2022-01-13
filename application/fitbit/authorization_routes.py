@@ -8,8 +8,9 @@ import base64
 from datetime import datetime
 import threading
 
-from application.config import FITBIT_CONFIG
+from application.config import FITBIT_CONFIG, HOST_CONFIG
 oauth_config = FITBIT_CONFIG
+host = HOST_CONFIG
 
 from .user_credential_manager import add_access_token
 from .data_import_module import initiate_fitbit_data_import
@@ -50,10 +51,11 @@ def get_token():
     if 'user_id' not in session:
         return 'Use proper channels'
     if 'request_sent' not in session:
+        print("Redirect url: {}".format(host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL']))
         session['request_sent'] = True
         print("request sent")
         return redirect("{}?client_id={}&redirect_uri={}&scope={}&response_type=code".format(oauth_config['AUTH_URL'],
-                oauth_config['CLIENT_ID'] ,oauth_config['REDIRECT_URL'], scope))
+                oauth_config['CLIENT_ID'] ,host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL'], scope))
     return "Already connected"
 
 
@@ -76,7 +78,7 @@ def get_access_token():
                       'client_id': oauth_config['CLIENT_ID'],
                       'client_secret': oauth_config['CLIENT_SECRET'],
                       'code': code,
-                      'redirect_uri': oauth_config['REDIRECT_URL']}
+                      'redirect_uri': host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL']}
     request_headers = {'Authorization': 'Basic {}'.format(basic_code),
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }

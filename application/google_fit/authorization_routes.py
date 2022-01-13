@@ -6,7 +6,7 @@ from authlib.integrations.flask_client import OAuth
 import pprint
 from datetime import datetime
 
-from application.config import GOOGLE_FIT_CONFIG
+from application.config import GOOGLE_FIT_CONFIG, HOST_CONFIG
 oauth_config = GOOGLE_FIT_CONFIG
 oauth = OAuth()
 
@@ -45,9 +45,11 @@ google_fit_routes = Blueprint("google_fit_routes", __name__)
 def dashboard_home():
     return "Google routes"
 
+# THIS MODULE IS DEPRECATED AND IS NOT USED ANY MORE
+
 @google_fit_routes.route("/google-fit/connection", methods=['GET', 'POST'])
 def google_fit_connection():
-    # print("in google route")
+    print("in google route")
     user_id = request.args.get("user_id", None)
     if user_id is None:
         return Response("User not logged in", 401)
@@ -55,7 +57,8 @@ def google_fit_connection():
     session['user_id'] = user_id
 
     google_fit = oauth.create_client("google")
-    redirect_uri = GOOGLE_FIT_CONFIG['REDIRECT_URL']#url_for('google-fit/oauth/code-callback', external=True)
+    redirect_uri = HOST_CONFIG['HOST_ADDRESS'] +GOOGLE_FIT_CONFIG['REDIRECT_URL']#url_for('google-fit/oauth/code-callback', external=True)
+    print("redirect url:{}".format(redirect_uri))
 
     return google_fit.authorize_redirect(redirect_uri)
 

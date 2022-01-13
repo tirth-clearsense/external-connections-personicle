@@ -12,8 +12,8 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 
 from application.utils.user_credentials_manager import add_access_token
-from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC
-oauth_config = GOOGLE_FIT_CONFIG
+from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC, HOST_CONFIG
+
 oauth = OAuth()
 
 from .google_fit_import_module import initiate_google_fit_data_import
@@ -60,7 +60,7 @@ def google_fit_connection():
     # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
     # configured in the API Console. If this value doesn't match an authorized URI,
     # you will get a 'redirect_uri_mismatch' error.
-    flow.redirect_uri = GOOGLE_FIT_CONFIG['REDIRECT_URL']
+    flow.redirect_uri = HOST_CONFIG['HOST_ADDRESS'] + GOOGLE_FIT_CONFIG['REDIRECT_URL']
     # Generate URL for request to Google's OAuth 2.0 server.
     # Use kwargs to set optional request parameters.
     authorization_url, state = flow.authorization_url(
@@ -95,7 +95,7 @@ def get_access_token():
         os.path.join(PROJ_LOC, GOOGLE_FIT_CONFIG['SECRET_JSON']),
         scopes=APP_SCOPE,
         state=state)
-    flow.redirect_uri = GOOGLE_FIT_CONFIG['REDIRECT_URL']
+    flow.redirect_uri = HOST_CONFIG['HOST_ADDRESS'] + GOOGLE_FIT_CONFIG['REDIRECT_URL']
 
     flow.fetch_token(authorization_response=auth_response)
 

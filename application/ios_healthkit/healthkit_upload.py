@@ -37,17 +37,20 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
         print(formatted_record)
         count += 1
 
-        # send the record and schema to producer
-        args = Bunch({
-                    'topic': topic,
-                    'schema_file': schema,
-                    'record_value': json.dumps(formatted_record),
-                    "bootstrap_servers": "localhost:9092",
-                    "schema_registry": "http://localhost:8081",
-                    "record_key": None
-                })
-        print(args.schema_file)
-        send_record(args)
+        # # send the record and schema to producer
+        # args = Bunch({
+        #             'topic': topic,
+        #             'schema_file': schema,
+        #             'record_value': json.dumps(formatted_record),
+        #             "bootstrap_servers": "localhost:9092",
+        #             "schema_registry": "http://localhost:8081",
+        #             "record_key": None
+        #         })
+        # print(args.schema_file)
+
+        # send_record(args)
+
+        send_records_to_eventhub(schema, json.dumps(formatted_record), 'testhub-new')
 
         if limit is not None and count <= limit:
             break

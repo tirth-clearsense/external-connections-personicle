@@ -1,5 +1,5 @@
 import json
-from producer.send_record import send_record
+from producer.send_record_azure import send_records_to_eventhub
 from .utils.healthkit_parsers import *
 import os
 

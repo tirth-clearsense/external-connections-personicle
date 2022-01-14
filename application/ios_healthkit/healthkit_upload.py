@@ -1,5 +1,7 @@
 import json
-from producer.send_record_azure import send_records_to_eventhub
+from producer.send_record import send_record
+from producer.send_records_azure import send_records_to_eventhub
+
 from .utils.healthkit_parsers import *
 import os
 
@@ -50,7 +52,7 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
 
         # send_record(args)
 
-        send_records_to_eventhub(schema, json.dumps(formatted_record), 'testhub-new')
+        send_records_to_eventhub(schema, formatted_record, 'testhub-new')
 
         if limit is not None and count <= limit:
             break

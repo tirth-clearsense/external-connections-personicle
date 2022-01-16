@@ -1,5 +1,7 @@
 import json
 from producer.send_record import send_record
+from producer.send_records_azure import send_records_to_eventhub
+
 from .utils.healthkit_parsers import *
 import os
 
@@ -37,17 +39,20 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
         print(formatted_record)
         count += 1
 
-        # send the record and schema to producer
-        args = Bunch({
-                    'topic': topic,
-                    'schema_file': schema,
-                    'record_value': json.dumps(formatted_record),
-                    "bootstrap_servers": "localhost:9092",
-                    "schema_registry": "http://localhost:8081",
-                    "record_key": None
-                })
-        print(args.schema_file)
-        send_record(args)
+        # # send the record and schema to producer
+        # args = Bunch({
+        #             'topic': topic,
+        #             'schema_file': schema,
+        #             'record_value': json.dumps(formatted_record),
+        #             "bootstrap_servers": "localhost:9092",
+        #             "schema_registry": "http://localhost:8081",
+        #             "record_key": None
+        #         })
+        # print(args.schema_file)
+
+        # send_record(args)
+
+        send_records_to_eventhub(schema, formatted_record, 'testhub-new')
 
         if limit is not None and count <= limit:
             break

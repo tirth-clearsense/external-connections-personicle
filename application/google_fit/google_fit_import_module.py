@@ -12,6 +12,7 @@ SLEEP_ACTIVITY = 72
 SESSIONS_DATE_OFFSET = timedelta(days=7)
 
 from application.config import GOOGLE_FIT_CONFIG
+from . import google_fit_upload_azure
 # from application import app
 
 
@@ -50,6 +51,8 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
 
         pprint.pprint(activities)
         # SEND DATA TO KAFKA 
+        google_fit_upload_azure.send_records_to_producer(personicle_user_id, activities['session'], 'activity')
+
         call_api = activities.get('hasMoreData', False)
         repeat_token = activities.get('nextPageToken', None)
 
@@ -59,7 +62,6 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
 
 
 def google_fit_dataset_import(personicle_user_id, access_token, last_accessed_at):
-
     pass
 
 def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):

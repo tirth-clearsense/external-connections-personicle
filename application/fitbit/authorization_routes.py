@@ -1,6 +1,7 @@
 from flask import jsonify
 from flask import request, session, redirect
 from flask import Blueprint
+from flask.wrappers import Response
 
 import requests
 import pprint
@@ -9,10 +10,11 @@ from datetime import datetime
 import threading
 
 from application.config import FITBIT_CONFIG, HOST_CONFIG
+from application.utils.user_credentials_manager import verify_user_connection, add_access_token
 oauth_config = FITBIT_CONFIG
 host = HOST_CONFIG
 
-from .user_credential_manager import add_access_token
+# from application.utils.user_credential_manager import add_access_token
 from .data_import_module import initiate_fitbit_data_import
 
 # from application import app
@@ -26,19 +28,21 @@ def test_route():
     return "Testing connections server"
 
 @fitbit_routes.route('/fitbit', methods=["GET", "POST"])
-# @app.route('/index', methods=["GET", "POST"])
-# @app.route('/user-dashboard', methods=['GET', 'POST'])
 def dashboard_home():
     return True
 
 @fitbit_routes.route('/fitbit/connection', methods=['GET', 'POST'])
 def fitbit_connection():
-    session_id = True #request['data']['session_id']
     session.clear()
     request_data = request.args
-    session['user_id'] = session_id
+    session['user_id'] = request.args.get("user_id", None)
+    if session['user_id'] is None:
+        return Response("User not logged in", 401)
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
+    if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
+        return jsonify({"success": True})
+    
     return redirect('/fitbit/oauth/code-callback')
     
 
@@ -46,6 +50,8 @@ def fitbit_connection():
 # store this and use to get access code
 @fitbit_routes.route('/fitbit/oauth/code-callback/')
 def get_token():
+    if session['user_id'] is None:
+        return Response("User not logged in", 401)
     scope = "activity%20heartrate%20location%20nutrition%20profile%20sleep%20weight"
     print(session.keys())
     if 'user_id' not in session:
@@ -62,8 +68,10 @@ def get_token():
 # Store the access token in sqlite db and initiate data import
 @fitbit_routes.route('/fitbit/oauth/access-token/')
 def get_access_token():
+    if session['user_id'] is None:
+        return Response("User not logged in", 401)
     # need personicle user id in session
-    user_id = "test_id"
+    user_id = session['user_id']
     code = request.args.get('code')
     # print(session['user_id'])
     print(code)
@@ -88,8 +96,6 @@ def get_access_token():
 
     pprint.pprint(resp)
 
-    # store a user's access token and refresh tokens in a sqlite db
-    # db.create_all()
     action ,user_record = add_access_token(user_id, service_name='fitbit', access_token=resp['access_token'], expires_in=resp['expires_in'],
                             created_at=datetime.utcnow(), external_user_id=resp['user_id'], refresh_token=resp['refresh_token'])
 
@@ -102,12 +108,9 @@ def get_access_token():
         db.session.commit()
     except Exception as e:
         print(e)
-        # raise e
         db.session.rollback()
         result = jsonify(success=False)
-    # return resp
-    # th = threading.Thread(target=initiate_fitbit_data_import, args=(user_id,))
+    
     initiate_fitbit_data_import(user_id)
-    # th.start()
     return result
 

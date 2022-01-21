@@ -41,6 +41,7 @@ def fitbit_connection():
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
+        initiate_fitbit_data_import(session['user_id'])
         return jsonify({"success": True})
     
     return redirect('/fitbit/oauth/code-callback')

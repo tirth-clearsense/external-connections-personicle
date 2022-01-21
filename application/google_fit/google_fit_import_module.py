@@ -5,6 +5,7 @@ import requests
 from datetime import datetime, timedelta
 import pprint
 import json
+import logging
 
 GOOGLE_FIT_SESSIONS_ENDPOINT = "https://www.googleapis.com/fitness/v1/users/me/sessions"
 SLEEP_ACTIVITY = 72
@@ -15,6 +16,7 @@ from application.config import GOOGLE_FIT_CONFIG
 from . import google_fit_upload_azure
 # from application import app
 
+LOG = logging.getLogger(__name__)
 
 def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_token, last_accessed_at, google_fit_oauth_config):
     """
@@ -32,7 +34,7 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
     repeat_token = None
     call_api = True
     while call_api:
-        end_time = start_time + SESSIONS_DATE_OFFSET
+        # end_time = start_time + SESSIONS_DATE_OFFSET
         query_parameters = {}
         if start_time:
             query_parameters['startTime'] = start_time.strftime("%Y-%m-%dT%H:%M:%S%zZ")
@@ -45,19 +47,24 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
             "accept": "application/json",
             "authorization": "Bearer {}".format(access_token)
         }
+
+        LOG.info("Requesting google-fit data for user {} from {} to {}".format(personicle_user_id, start_time, end_time))
     
         activities_response = requests.get(google_fit_sleep_endpoint, headers=query_header, params=query_parameters)
         activities = json.loads(activities_response.content)
 
-        pprint.pprint(activities)
+        LOG.info("Number of sessions: {}".format(len(activities['session'])))
+        LOG.info("Received payload: {}".format(json.dumps(activities, indent=2)))
         # SEND DATA TO KAFKA 
-        google_fit_upload_azure.send_records_to_producer(personicle_user_id, activities['session'], 'activity')
+        if len(activities['session'] > 0):
+            google_fit_upload_azure.send_records_to_producer(personicle_user_id, activities['session'], 'activity')
 
         call_api = activities.get('hasMoreData', False)
         repeat_token = activities.get('nextPageToken', None)
 
         # start_time = end_time
         count_sessions += len(activities['session'])
+    LOG.info("Number of sessions sent : {}".format(count_sessions))
     return True, count_sessions
 
 
@@ -80,13 +87,13 @@ def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     None
     """
     google_fit_oauth_config = GOOGLE_FIT_CONFIG
-    # with app.app_context():
+    print("Initiating google fit data import")
     user_credentials = ExternalConnections.query.filter_by(userId=personicle_user_id, service='google-fit').all()
     if len(user_credentials) == 0:
+        print("No google fit credentials found for user: {}".format(personicle_user_id))
         return None
     assert len(user_credentials) == 1, "Duplicate google fit credentials for user: {}".format(personicle_user_id)
-
-    # with app.app_context():
+    print("Found user access token")
     user_record = ExternalConnections.query.filter_by(userId=personicle_user_id, service='google-fit').one()
 
     google_fit_user_id = user_record.external_user_id

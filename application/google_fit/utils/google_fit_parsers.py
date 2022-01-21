@@ -11,7 +11,7 @@ def google_activity_parser(raw_event, personicle_user_id):
     new_event_record['individual_id'] = personicle_user_id
     # timestamp format 2021-11-25T09:27:30.000-08:00
     new_event_record['start_time'] = int(raw_event['startTimeMillis'])
-    duration = int(raw_event['startTimeMillis']) - int(raw_event['endTimeMillis'])
+    duration = int(raw_event['endTimeMillis']) - int(raw_event['startTimeMillis'])
     new_event_record['end_time'] = int(raw_event['endTimeMillis'])
 
     new_event_record['event_name'] = raw_event['name']

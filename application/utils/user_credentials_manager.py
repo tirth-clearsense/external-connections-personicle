@@ -58,7 +58,8 @@ def verify_user_connection(personicle_user_id, connection_name):
         time_created = user_record.created_at
         life_time = user_record.expires_in
         print("Time of creation: {}".format(time_created))
-        print("Expires_in: {}".format(life_time))
+        print("Expires_at: {}".format(time_created+timedelta(seconds=life_time)))
+        print("Current time: {}".format(datetime.utcnow()))
 
         if datetime.utcnow() >= time_created+timedelta(seconds=life_time):
             return False

@@ -1,3 +1,4 @@
+import logging
 from flask import request, session, redirect, url_for
 from flask import Blueprint
 from flask.json import jsonify
@@ -6,7 +7,6 @@ from authlib.integrations.flask_client import OAuth
 import os
 import pprint
 from datetime import datetime
-import threading
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -17,6 +17,8 @@ from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC, HOST_CONFIG
 oauth = OAuth()
 
 from .google_fit_import_module import initiate_google_fit_data_import
+
+LOG = logging.getLogger(__name__)
 
 APP_SCOPE = [
         "https://www.googleapis.com/auth/fitness.sleep.read",
@@ -38,6 +40,7 @@ google_API_routes = Blueprint("google_fit_routes", __name__)
 
 @google_API_routes.route('/google-fit')
 def dashboard_home():
+    LOG.info("Google routes accessed: OK")
     return "Google routes"
 
 @google_API_routes.route("/google-fit/connection", methods=['GET', 'POST'])
@@ -45,13 +48,17 @@ def google_fit_connection():
     # print("in google route")
     user_id = request.args.get("user_id", None)
     if user_id is None:
+        LOG.error("Unauthorised access: Denied")
         return Response("User not logged in", 401)
     
     for k in list(session.keys()):
         session.pop(k)
 
     session['user_id'] = user_id
-    if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
+    LOG.info("Google fit authorization for user: {}".format(session['user_id']))
+    if verify_user_connection(personicle_user_id=session['user_id'], connection_name='google-fit'):
+        LOG.info("User {} has active access token for google fit".format(session['user_id']))
+        initiate_google_fit_data_import(session['user_id'])
         return jsonify({"success": True})
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         os.path.join(PROJ_LOC, GOOGLE_FIT_CONFIG['SECRET_JSON']),
@@ -116,9 +123,11 @@ def get_access_token():
         'expires_at': credentials.expiry
     }
 
-    # pprint.pprint(credentials.__dict__)
-    pprint.pprint(session['credentials'])
-    action ,user_record = add_access_token(user_id, service_name='google-fit', access_token=credentials.token, expires_in=credentials.expiry,
+    expires_in = (credentials.expiry - datetime.utcnow()).total_seconds()
+
+    pprint.pprint(credentials.__dict__)
+    # pprint.pprint(session['credentials'])
+    action ,user_record = add_access_token(user_id, service_name='google-fit', access_token=credentials.token, expires_in=expires_in,
                             created_at=datetime.utcnow(), external_user_id=None, refresh_token=credentials.refresh_token)
 
     try:

@@ -11,7 +11,7 @@ import threading
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 
-from application.utils.user_credentials_manager import add_access_token
+from application.utils.user_credentials_manager import add_access_token, verify_user_connection
 from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC, HOST_CONFIG
 
 oauth = OAuth()
@@ -51,6 +51,8 @@ def google_fit_connection():
         session.pop(k)
 
     session['user_id'] = user_id
+    if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
+        return jsonify({"success": True})
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         os.path.join(PROJ_LOC, GOOGLE_FIT_CONFIG['SECRET_JSON']),
         scopes=APP_SCOPE)

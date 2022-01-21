@@ -48,7 +48,7 @@ def add_access_token(personicle_user_id, **kwargs):
 
 def verify_user_connection(personicle_user_id, connection_name):
     """
-    Verify if the user has an active access token for the requested service, if not then request a new access token
+    Return True if the user has an active access token for the requested service, if not then request a new access token
     """
     # check if user already exists
     user_records = ExternalConnections.query.filter_by(userId=personicle_user_id, service=connection_name).all()

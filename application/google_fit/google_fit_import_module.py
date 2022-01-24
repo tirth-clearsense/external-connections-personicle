@@ -8,6 +8,8 @@ import json
 import logging
 
 GOOGLE_FIT_SESSIONS_ENDPOINT = "https://www.googleapis.com/fitness/v1/users/me/sessions"
+GOOGLE_FIT_DATA_SOURCES = "https://www.googleapis.com/fitness/v1/users/me/dataSources"
+
 SLEEP_ACTIVITY = 72
 
 SESSIONS_DATE_OFFSET = timedelta(days=7)
@@ -69,6 +71,11 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
 
 
 def google_fit_dataset_import(personicle_user_id, access_token, last_accessed_at):
+    """
+    Get all datasets for the current user
+    First need to list all data sources for the user
+    Then download the datasets for each data source
+    """
     pass
 
 def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):

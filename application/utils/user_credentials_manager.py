@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from application.models.external_connections import ExternalConnections
 
 def add_access_token(personicle_user_id, **kwargs):
@@ -43,3 +44,26 @@ def add_access_token(personicle_user_id, **kwargs):
     # Add the user record
         return "add", new_record
     # return the record and add it in the calling method
+
+
+def verify_user_connection(personicle_user_id, connection_name):
+    """
+    Verify if the user has an active access token for the requested service, if not then request a new access token
+    """
+    # check if user already exists
+    user_records = ExternalConnections.query.filter_by(userId=personicle_user_id, service=connection_name).all()
+    if len(user_records) > 0:
+        assert len(user_records) == 1, "Duplicate records {} found for user: {}".format(connection_name, personicle_user_id)
+        user_record = ExternalConnections.query.filter_by(userId=personicle_user_id, service=connection_name).one()
+        time_created = user_record.created_at
+        life_time = user_record.expires_in
+        print("Time of creation: {}".format(time_created))
+        print("Expires_in: {}".format(life_time))
+
+        if datetime.utcnow() >= time_created+timedelta(seconds=life_time):
+            return False
+        else:
+            return True
+        
+    else:
+        return False

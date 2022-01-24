@@ -20,7 +20,7 @@ class ExternalConnections(db.Model):
 
     # required fields
     id = db.Column(db.Integer, primary_key=True)
-    userId = db.Column(db.String(50), unique=True, nullable=False)
+    userId = db.Column(db.String(50), nullable=False)
     service = db.Column(db.String(120), nullable=False)
     access_token = db.Column(db.String(500), nullable=False)
     expires_in = db.Column(db.Integer, nullable=False)

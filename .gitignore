@@ -141,3 +141,6 @@ userDatabase/*
 database/*
 tests/*
 config_json/*
+
+# ignore certificates
+certificates/*

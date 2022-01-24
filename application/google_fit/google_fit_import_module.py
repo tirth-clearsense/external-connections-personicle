@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pprint
 import json
 import logging
-from utils.google_fit_datasets import get_data_sources, get_dataset_for_datasource
+from .utils.google_fit_datasets import get_data_sources, get_dataset_for_datasource
 
 GOOGLE_FIT_SESSIONS_ENDPOINT = "https://www.googleapis.com/fitness/v1/users/me/sessions"
 GOOGLE_FIT_DATA_SOURCES = "https://www.googleapis.com/fitness/v1/users/me/dataSources"

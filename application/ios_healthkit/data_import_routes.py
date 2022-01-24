@@ -12,10 +12,12 @@ import threading
 from application.models.base import db
 from . import healthkit_upload
 from application.config import IOS_APP_CONFIG
+import logging
 config = IOS_APP_CONFIG
 
 
 healthkit_routes = Blueprint("healthkit_routes", __name__)
+LOG = logging.getLogger(__name__)
 
 @healthkit_routes.route('/healthkit', methods=["GET", "POST"])
 # @app.route('/index', methods=["GET", "POST"])
@@ -27,6 +29,8 @@ def dashboard_home():
 @healthkit_routes.route('/healthkit/upload', methods=['POST'])
 def healthkit_connection():
     if not request.json or not 'data' in request.json:
+        LOG.error("JSON or data not found")
+        LOG.error(request.text)
         return jsonify({}), 400
 
     result = {
@@ -42,7 +46,11 @@ def healthkit_connection():
                 'success': True
             }
 
+            LOG.info("Received healthkit data")
+
             return jsonify(result), 201
+    else:
+        LOG.error("Received API call without authorization test_key")
 
     return jsonify(result), 400
 

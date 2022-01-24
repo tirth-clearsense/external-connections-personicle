@@ -27,7 +27,7 @@ def dashboard_home():
 @healthkit_routes.route('/healthkit/upload', methods=['POST'])
 def healthkit_connection():
     if not request.json or not 'data' in request.json:
-        return jsonify(result), 400
+        return jsonify({}), 400
 
     result = {
         'success': False

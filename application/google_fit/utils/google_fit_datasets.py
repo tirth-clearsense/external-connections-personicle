@@ -31,7 +31,7 @@ def get_data_sources(access_token, data_types = None):
     LOG.info("Number of sources: {}".format(len(data_sources['dataSource'])))
     LOG.info("Received payload: {}".format(json.dumps(data_sources, indent=2)))
 
-    return data_sources
+    return data_sources['dataSource']
 
 def get_dataset_for_datasource(access_token, datasource, dataset_id):
     """
@@ -46,7 +46,7 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id):
         "authorization": "Bearer {}".format(access_token)
     }
 
-    
+    total_data_points = 0
     LOG.info("Querying source: {} for time range: {}".format(datasource, dataset_id))
     next_page_token = None
     next_page = True
@@ -69,8 +69,18 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id):
 
         LOG.info("Number of data points: {}".format(len(dataset['point'])))
         LOG.info("Received payload: {}".format(json.dumps(dataset, indent=2)))
-
+        total_data_points += len(dataset['point'])
         # map dataset to table and event hub topic
+        # IN PROGRESS
 
         # send data to event hub topic
+        # IN PROGRESS
+
+        # get next page token
+        next_page_token = dataset.get('nextPageToken', None)
+        if next_page_token:
+            next_page = True
+        else:
+            next_page = False
+    LOG.info("Total data points added for source {}: {}".format(datasource, total_data_points))
     return

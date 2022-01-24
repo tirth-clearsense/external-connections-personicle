@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import pprint
 import json
 import logging
+from utils.google_fit_datasets import get_data_sources, get_dataset_for_datasource
 
 GOOGLE_FIT_SESSIONS_ENDPOINT = "https://www.googleapis.com/fitness/v1/users/me/sessions"
 GOOGLE_FIT_DATA_SOURCES = "https://www.googleapis.com/fitness/v1/users/me/dataSources"
@@ -58,7 +59,7 @@ def google_fit_sessions_import(personicle_user_id, google_fit_user_id, access_to
         LOG.info("Number of sessions: {}".format(len(activities['session'])))
         LOG.info("Received payload: {}".format(json.dumps(activities, indent=2)))
         # SEND DATA TO KAFKA 
-        if len(activities['session'] > 0):
+        if len(activities['session']) > 0:
             google_fit_upload_azure.send_records_to_producer(personicle_user_id, activities['session'], 'activity')
 
         call_api = activities.get('hasMoreData', False)
@@ -76,7 +77,16 @@ def google_fit_dataset_import(personicle_user_id, access_token, last_accessed_at
     First need to list all data sources for the user
     Then download the datasets for each data source
     """
-    pass
+    datasources_list = get_data_sources(access_token)
+
+    for source in datasources_list:
+        # get the data type from source
+        data_type = source['dataType']['name'].split(".")[-1]
+        
+        # map the data type to a table
+        # get the data for the source
+        pass
+    return
 
 def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     """
@@ -106,9 +116,12 @@ def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     google_fit_user_id = user_record.external_user_id
     last_accessed_at = user_record.last_accessed_at
 
-    google_fit_sessions_import(personicle_user_id, google_fit_user_id, user_record.access_token, last_accessed_at, google_fit_oauth_config)
+    session_status, num_sessions = google_fit_sessions_import(personicle_user_id, google_fit_user_id, user_record.access_token, last_accessed_at, google_fit_oauth_config)
     
-    user_record.last_accessed_at = datetime.utcnow()
+    datasets_added = google_fit_dataset_import(personicle_user_id, user_record.access_token, last_accessed_at)
+
+    if num_sessions > 0:
+        user_record.last_accessed_at = datetime.utcnow()
     db.session.commit()
     return True
     # get access token from sqlite

@@ -47,9 +47,9 @@ def healthkit_connection():
             }
 
             LOG.info("Received healthkit data")
-            LOG.info('Number of data records:', len(data))
+            LOG.info('Number of data records: ' + str(len(data)))
             if len(data) > 0:
-                LOG.info('Sample record:', data[0])
+                LOG.info('Sample record: ' + str(data[0]))
 
             return jsonify(result), 201
     else:

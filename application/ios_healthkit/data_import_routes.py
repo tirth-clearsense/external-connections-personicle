@@ -30,7 +30,7 @@ def dashboard_home():
 def healthkit_connection():
     if not request.json or not 'data' in request.json:
         LOG.error("JSON or data not found")
-        LOG.error(request.text)
+        LOG.error(request.get_data(as_text=True))
         return jsonify({}), 400
 
     result = {
@@ -47,6 +47,9 @@ def healthkit_connection():
             }
 
             LOG.info("Received healthkit data")
+            LOG.info('Number of data records:', len(data))
+            if len(data) > 0:
+                LOG.info('Sample record:', data[0])
 
             return jsonify(result), 201
     else:

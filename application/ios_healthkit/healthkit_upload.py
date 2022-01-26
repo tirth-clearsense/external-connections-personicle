@@ -43,7 +43,6 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
     LOG.info("Sending records to producer")
     LOG.info("Formatting records...")
     for record in records:
-
         formatted_record = record_formatter(record, personicle_user_id)
         count += 1
 
@@ -60,7 +59,7 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
 
         # send_record(args)
 
-        if count == 0:
+        if count == 1:
             LOG.info("Calling send_records_to_eventhub...")
             LOG.info(str(formatted_record))
 

@@ -28,12 +28,12 @@ def get_data_sources(access_token, data_types = None):
         data_sources_response = requests.get(DATA_SOURCE_URL, headers=query_header, params={"dataTypeName": data_types})
     data_sources = json.loads(data_sources_response.content)
 
-    LOG.info("Number of sources: {}".format(len(data_sources['dataSource'])))
     LOG.info("Received payload: {}".format(json.dumps(data_sources, indent=2)))
+    LOG.info("Number of sources: {}".format(len(data_sources['dataSource'])))
 
     return data_sources['dataSource']
 
-def get_dataset_for_datasource(access_token, datasource, dataset_id):
+def get_dataset_for_datasource(access_token, datasource, dataset_id, personicle_table):
     """
     Get the dataset associated with a data source and the dataset id
     params:
@@ -67,10 +67,17 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id):
                                     headers=query_header, params=query_parameters)
         dataset = json.loads(dataset_response.content)
 
-        LOG.info("Number of data points: {}".format(len(dataset['point'])))
         LOG.info("Received payload: {}".format(json.dumps(dataset, indent=2)))
+        # if the API call throws an error
+        if 'error' in dataset.keys():
+            LOG.error(dataset['error'])
+            continue
+    
+        LOG.info("Number of data points: {}".format(len(dataset['point'])))
+        
         total_data_points += len(dataset['point'])
         # map dataset to table and event hub topic
+        # DEFINE EVENT HUB TOPICS FOR DIFFERENT DATA TYPES
         # IN PROGRESS
 
         # send data to event hub topic
@@ -80,7 +87,8 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id):
         next_page_token = dataset.get('nextPageToken', None)
         if next_page_token:
             next_page = True
+            LOG.info("Next page token found")
         else:
             next_page = False
     LOG.info("Total data points added for source {}: {}".format(datasource, total_data_points))
-    return
+    return total_data_points

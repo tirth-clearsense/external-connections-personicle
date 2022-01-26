@@ -1,4 +1,5 @@
 import logging
+from urllib import response
 from flask import request, session, redirect, url_for
 from flask import Blueprint
 from flask.json import jsonify
@@ -145,6 +146,6 @@ def get_access_token():
     # return resp
     # data_import_thread = threading.Thread(target=initiate_google_fit_data_import, args=(user_id,))
     # data_import_thread.start()
-    initiate_google_fit_data_import(user_id)
-    
+    resp = initiate_google_fit_data_import(user_id)
+    result = jsonify(success=True, resp=resp)
     return result

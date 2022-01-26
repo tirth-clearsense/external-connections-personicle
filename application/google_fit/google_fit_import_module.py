@@ -1,3 +1,5 @@
+import time
+from urllib import response
 from application.models.external_connections import ExternalConnections
 from application.models.base import db
 
@@ -7,6 +9,7 @@ import pprint
 import json
 import logging
 from .utils.google_fit_datasets import get_data_sources, get_dataset_for_datasource
+from .utils.google_fit_data_mapping import DATA_DICTIONARY
 
 GOOGLE_FIT_SESSIONS_ENDPOINT = "https://www.googleapis.com/fitness/v1/users/me/sessions"
 GOOGLE_FIT_DATA_SOURCES = "https://www.googleapis.com/fitness/v1/users/me/dataSources"
@@ -78,15 +81,34 @@ def google_fit_dataset_import(personicle_user_id, access_token, last_accessed_at
     Then download the datasets for each data source
     """
     datasources_list = get_data_sources(access_token)
+    resp = {}
+    if last_accessed_at is None:
+        end_time = time.time_ns()
+        start_time = int(end_time - timedelta(days=365).total_seconds()*1000000000)
+    else:
+        start_time = int(last_accessed_at.timestamp())*1000000000
+        end_time = time.time_ns()
+    dataset_id = "{}-{}".format(start_time, end_time)
 
     for source in datasources_list:
         # get the data type from source
-        data_type = source['dataType']['name'].split(".")[-1]
+        data_type = source['dataType']['name']
+        dataset_name = source['dataStreamId']
         
         # map the data type to a table
+        if data_type not in DATA_DICTIONARY.keys():
+            LOG.warning("Google type {} not in google fit data dictionary".format(data_type))
+            continue
+        personicle_mapping = DATA_DICTIONARY[data_type]
+
         # get the data for the source
-        pass
-    return
+        # define the time range for the dataset id
+        
+        number_of_datapoints_added = get_dataset_for_datasource(access_token, dataset_name, dataset_id, personicle_mapping)
+
+        resp[personicle_mapping] = resp.get(personicle_mapping, 0) + number_of_datapoints_added
+        
+    return resp
 
 def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     """
@@ -104,13 +126,13 @@ def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     None
     """
     google_fit_oauth_config = GOOGLE_FIT_CONFIG
-    print("Initiating google fit data import")
+    LOG.info("Initiating google fit data import")
     user_credentials = ExternalConnections.query.filter_by(userId=personicle_user_id, service='google-fit').all()
     if len(user_credentials) == 0:
         print("No google fit credentials found for user: {}".format(personicle_user_id))
         return None
     assert len(user_credentials) == 1, "Duplicate google fit credentials for user: {}".format(personicle_user_id)
-    print("Found user access token")
+    LOG.info("Found user access token")
     user_record = ExternalConnections.query.filter_by(userId=personicle_user_id, service='google-fit').one()
 
     google_fit_user_id = user_record.external_user_id
@@ -120,10 +142,13 @@ def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     
     datasets_added = google_fit_dataset_import(personicle_user_id, user_record.access_token, last_accessed_at)
 
+    resp = datasets_added
+    resp['sessions_added'] = num_sessions
+
     if num_sessions > 0:
         user_record.last_accessed_at = datetime.utcnow()
     db.session.commit()
-    return True
+    return resp
     # get access token from sqlite
     # call api end points for different data scopes included in the request
     # these include activities, sleep, different data streams such as heart rate , steps, weight etc.

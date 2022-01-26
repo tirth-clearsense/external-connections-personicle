@@ -50,25 +50,12 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
         formatted_record_list.append(formatted_record)
         count += 1
 
-        # # send the record and schema to producer
-        # args = Bunch({
-        #             'topic': topic,
-        #             'schema_file': schema,
-        #             'record_value': json.dumps(formatted_record),
-        #             "bootstrap_servers": "localhost:9092",
-        #             "schema_registry": "http://localhost:8081",
-        #             "record_key": None
-        #         })
-        # print(args.schema_file)
-
-        # send_record(args)
-
         if count == 1:
             LOG.info("Calling send_records_to_eventhub...")
             LOG.info(str(formatted_record))
 
 
-        if limit is not None and count > limit:
+        if limit is not None and count >= limit:
             break
 
     LOG.info(f'Calling send_records_to_eventhub on {len(formatted_record_list)} records')

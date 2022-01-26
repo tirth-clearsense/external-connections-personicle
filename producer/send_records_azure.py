@@ -7,10 +7,13 @@ from azure.identity import DefaultAzureCredential
 from azure.schemaregistry import SchemaRegistryClient
 from azure.schemaregistry.serializer.avroserializer import AvroSerializer
 import asyncio
-import json 
+import json
+import logging
 
 from application.config import EVENTHUB_CONFIG
 from application.config import PROJ_LOC
+
+LOG = logging.getLogger(__name__)
 
 def send_records_to_eventhub(schema_file, records, eventhub_name):
     """
@@ -18,20 +21,22 @@ def send_records_to_eventhub(schema_file, records, eventhub_name):
     parameters:
     schema_file: Schema file to be used from the avro schemas available
     records: list of dictionaries with the batch of records
-    eventhub_name: Equivalent to kafka topic name 
+    eventhub_name: Equivalent to kafka topic name
     """
+
+    LOG.info(f'send_records_to_eventhub called on {len(records)} records...')
     credential = DefaultAzureCredential()
     # Namespace should be similar to: '<your-eventhub-namespace>.servicebus.windows.net'
-    
+
     fully_qualified_namespace = EVENTHUB_CONFIG['SCHEMA_REGISTRY_FQNS']
     group_name = EVENTHUB_CONFIG['SCHEMA_REGISTRY_GROUP']
     schema_registry_client = SchemaRegistryClient(fully_qualified_namespace, credential)
     serializer = AvroSerializer(client=schema_registry_client, group_name=group_name, auto_register_schemas=True)
 
     # define event hub producer client
-    print("connection string: {}".format(EVENTHUB_CONFIG['CONNECTION_STRING']))
+    LOG.info("connection string: {}".format(EVENTHUB_CONFIG['CONNECTION_STRING']))
     eventhub_producer = EventHubProducerClient.from_connection_string(
-        conn_str= 
+        conn_str=
         EVENTHUB_CONFIG['CONNECTION_STRING'],
         eventhub_name= eventhub_name
     )
@@ -42,10 +47,12 @@ def send_records_to_eventhub(schema_file, records, eventhub_name):
     print(schema_string)
     # call async producer with schema, producer and serializer
     # loop = asyncio.get_event_loop()
-    print("sending {} to {} with schema {}".format(records, eventhub_name, schema_string))
-    
+    LOG.info("sending {} to {} with schema {}".format(records, eventhub_name, schema_string))
+
     produce_records(records, eventhub_producer, serializer, schema_string, credential)
-    
+
+    LOG.info("method send_records_to_eventhub finished sending records")
+
 
 def produce_records(records, producer, serializer, schema_string, credentials):
     event_data_batch = producer.create_batch()

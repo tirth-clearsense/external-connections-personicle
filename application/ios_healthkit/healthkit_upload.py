@@ -42,8 +42,12 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
 
     LOG.info("Sending records to producer")
     LOG.info("Formatting records...")
+
+    formatted_record_list = []
+
     for record in records:
         formatted_record = record_formatter(record, personicle_user_id)
+        formatted_record_list.append(formatted_record)
         count += 1
 
         # # send the record and schema to producer
@@ -63,11 +67,10 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
             LOG.info("Calling send_records_to_eventhub...")
             LOG.info(str(formatted_record))
 
-        send_records_to_eventhub(schema, formatted_record, 'testhub-new')
 
         if limit is not None and count <= limit:
             break
-
+    send_records_to_eventhub(schema, formatted_record_list, 'testhub-new')
 
 
 if __name__ == "__main__":

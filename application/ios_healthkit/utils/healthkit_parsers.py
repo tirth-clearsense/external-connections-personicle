@@ -29,7 +29,4 @@ def format_healthkit_sleep_event(raw_event, personicle_user_id):
         'time_zone': get_value_wrapper(raw_event, 'HKTimeZone', 'Undefined')
     })
 
-    LOG.info("Parsing healthkit sleep event")
-    LOG.info(str(new_event_record))
-
     return new_event_record

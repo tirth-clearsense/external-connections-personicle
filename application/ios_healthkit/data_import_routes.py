@@ -46,7 +46,7 @@ def healthkit_connection():
             if len(data) > 0:
                 LOG.info('Sample record: ' + str(data[0]))
             LOG.info('Passing data records to producer method')
-            healthkit_upload.send_records_to_producer('user_id', data, 'sleep', limit=5)
+            healthkit_upload.send_records_to_producer('user_id', data, 'sleep', limit=10)
             result = {
                 'success': True
             }

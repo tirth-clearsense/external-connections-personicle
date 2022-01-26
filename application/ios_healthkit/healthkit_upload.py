@@ -68,8 +68,10 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
             LOG.info(str(formatted_record))
 
 
-        if limit is not None and count <= limit:
+        if limit is not None and count > limit:
             break
+
+    LOG.info(f'Calling send_records_to_eventhub on {len(formatted_record_list)} records')
     send_records_to_eventhub(schema, formatted_record_list, 'testhub-new')
 
 

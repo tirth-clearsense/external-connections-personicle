@@ -23,6 +23,9 @@ def send_records_to_eventhub(schema_file, records, eventhub_name):
     records: list of dictionaries with the batch of records
     eventhub_name: Equivalent to kafka topic name
     """
+    if type(records) is not list:
+        LOG.error(f'send_records_to_eventhub receive records typed not list {str(type(records))}')
+        assert type(records) is list, 'Records type is not list'
 
     LOG.info(f'send_records_to_eventhub called on {len(records)} records...')
     credential = DefaultAzureCredential()

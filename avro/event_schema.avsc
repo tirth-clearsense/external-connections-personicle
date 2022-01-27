@@ -1,4 +1,5 @@
 {
+    "namespace": "com.personicle.individual.event.fitbit",
     "type": "record",
     "name": "fitbit_event_record",
     "fields": [

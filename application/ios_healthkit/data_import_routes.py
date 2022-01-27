@@ -30,24 +30,27 @@ def dashboard_home():
 def healthkit_connection():
     if not request.json or not 'data' in request.json:
         LOG.error("JSON or data not found")
-        LOG.error(request.text)
+        LOG.error(request.get_data(as_text=True))
         return jsonify({}), 400
 
     result = {
         'success': False
     }
 
-
     if 'test_key' in request.json:
         if request.json['test_key'] == config['KEY']:
             data = request.json['data']
-            healthkit_upload.send_records_to_producer('user_id', data, 'sleep', limit=5)
+            LOG.info("Received healthkit data")
+            LOG.info('Number of data records: ' + str(len(data)))
+            if len(data) > 0:
+                LOG.info('Sample record: ' + str(data[0]))
+            LOG.info('Passing data records to producer method')
+            healthkit_upload.send_records_to_producer('user_id', data, 'sleep')
             result = {
                 'success': True
             }
 
-            LOG.info("Received healthkit data")
-
+            LOG.info('Finish sending records to producer, returning 201 to user')
             return jsonify(result), 201
     else:
         LOG.error("Received API call without authorization test_key")

@@ -72,6 +72,10 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id, personicle_
         if 'error' in dataset.keys():
             LOG.error(dataset['error'])
             continue
+
+        if 'point' not in dataset.keys():
+            LOG.error("Unkown respose received: {}".format(dataset))
+            continue
     
         LOG.info("Number of data points: {}".format(len(dataset['point'])))
         

@@ -1,3 +1,4 @@
+from os import stat
 from flask import jsonify
 from flask import request, session, redirect
 from flask import Blueprint
@@ -8,11 +9,14 @@ import pprint
 import base64
 from datetime import datetime
 import threading
+import logging
 
 from application.config import FITBIT_CONFIG, HOST_CONFIG
 from application.utils.user_credentials_manager import verify_user_connection, add_access_token
 oauth_config = FITBIT_CONFIG
 host = HOST_CONFIG
+
+LOG = logging.getLogger(__name__)
 
 # from application.utils.user_credential_manager import add_access_token
 from .data_import_module import initiate_fitbit_data_import
@@ -105,13 +109,17 @@ def get_access_token():
             db.session.add(user_record)
         else:
             pass
-        result = jsonify(success=True)
         db.session.commit()
     except Exception as e:
         print(e)
         db.session.rollback()
-        result = jsonify(success=False)
+        return jsonify(success=False)
     
-    initiate_fitbit_data_import(user_id)
-    return result
+    status, activities_response = initiate_fitbit_data_import(user_id)
+    if status:
+        LOG.info("Returning {}".format({'success': True, 'response': activities_response}))
+        return jsonify({'success': True, 'response': activities_response})
+    else:
+        LOG.info("Returning {}".format({'success': False, 'response': activities_response}))
+        return jsonify({'success': False, 'response': activities_response})
 

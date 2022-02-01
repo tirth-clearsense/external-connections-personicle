@@ -7,6 +7,7 @@ import json
 import logging
 
 from . import fitbit_upload
+from application.models.base import db
 
 FITBIT_ACTIVITIES_ENDPOINT = "/1/user/{user_id}/activities/list.json"
 
@@ -29,7 +30,7 @@ def fitbit_activity_import(personicle_user_id, fitbit_user_id, access_token, las
         }
     else:
         query_parameters = {
-            'afterDate': last_accessed_at,
+            'afterDate': last_accessed_at.date(),
             'sort': 'asc',
             'offset': 0,
             'limit': 100
@@ -67,7 +68,7 @@ def fitbit_sleep_import(personicle_user_id, fitbit_user_id, access_token, last_a
         }
     else:
         query_parameters = {
-            'afterDate': last_accessed_at,
+            'afterDate': last_accessed_at.date(),
             'sort': 'asc',
             'offset': 0,
             'limit': 100
@@ -114,8 +115,6 @@ def initiate_fitbit_data_import(personicle_user_id):
     download user activities and data from fitbit api
     send the data to kafka producer
 
-    FITBIT ACTIVITIES ENDPOINT: /1/user/[user-id]/activities/list.json
-
     Returns:
     None
     """
@@ -132,9 +131,17 @@ def initiate_fitbit_data_import(personicle_user_id):
     fitbit_user_id = user_record.external_user_id
     last_accessed_at = user_record.last_accessed_at
 
+    LOG.info("fitbit access token for user {} was last accessed at {}".format(personicle_user_id, last_accessed_at))
+
     status, activities_response = fitbit_activity_import(personicle_user_id, fitbit_user_id, user_record.access_token, last_accessed_at, fitbit_oauth_config)
+    sleep_status, sleep_response = fitbit_sleep_import(personicle_user_id, fitbit_user_id, user_record.access_token, last_accessed_at, fitbit_oauth_config)
     
-    response = {"activity_success": status, "activities_response": activities_response}
+    response = {"activity_success": status, "activities_response": activities_response,
+                "sleep_success": sleep_status, "sleep_response": sleep_response
+                }
+    if status:
+        user_record.last_accessed_at = datetime.utcnow()
+    db.session.commit()
     return status, response
 
 

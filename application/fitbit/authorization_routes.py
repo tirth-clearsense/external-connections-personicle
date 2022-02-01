@@ -41,12 +41,18 @@ def fitbit_connection():
     request_data = request.args
     session['user_id'] = request.args.get("user_id", None)
     if session['user_id'] is None:
+        LOG.error("Unauthorised access: Denied")
         return Response("User not logged in", 401)
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
-        initiate_fitbit_data_import(session['user_id'])
-        return jsonify({"success": True})
+        status, activities_response = initiate_fitbit_data_import(session['user_id'])
+        if status:
+            LOG.info("Returning {}".format({'success': True, 'response': activities_response}))
+            return jsonify({'success': True, 'response': activities_response})
+        else:
+            LOG.info("Returning {}".format({'success': False, 'response': activities_response}))
+            return jsonify({'success': False, 'response': activities_response})
     
     return redirect('/fitbit/oauth/code-callback')
     

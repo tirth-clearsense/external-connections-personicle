@@ -49,7 +49,8 @@ def fitbit_sleep_parser(raw_event, personicle_user_id):
         'minutes_asleep': raw_event['minutesAsleep'],
         'minutes_awake': raw_event['minutesAwake'],
         'sleep_latency': raw_event['minutesToFallAsleep'],
-        "time_in_bed": raw_event['timeInBed']
+        "time_in_bed": raw_event['timeInBed'],
+        "summary": raw_event.get('levels', {'summary': None}).get('summary', None)
     })
 
     # parse sleep stages information as separate events and send to event hub

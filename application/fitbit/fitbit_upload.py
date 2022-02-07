@@ -57,9 +57,18 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
             break
     # loop = asyncio.new_event_loop()
     # asyncio.set_event_loop(loop)
-    send_records_to_eventhub(schema, formatted_records, topic)
+    try:
+        send_records_to_eventhub(schema, formatted_records, topic)
+        num_records_sent = len(formatted_records)
+        status = True
+    except Exception as e:
+        LOG.error("Error while sending records to eventhub for stream {}: \n {}".format(stream_name, str(e)))
+        num_records_sent = 0
+        status = False
+    return status, num_records_sent
 
 
+# TESTING METHOD FOR BULK UPLOAD OF FITBIT DATA
 def send_records_from_file_to_producer(filename, stream_name, limit = None):
     count = 0
     record_formatter = RECORD_PROCESSING[stream_name]

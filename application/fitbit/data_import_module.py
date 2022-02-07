@@ -1,8 +1,6 @@
-from os import stat
 from application.models.external_connections import ExternalConnections
 import requests
 from datetime import datetime
-import pprint
 import json
 import logging
 
@@ -19,6 +17,14 @@ from application.config import FITBIT_CONFIG
 LOG = logging.getLogger(__name__)
 
 def fitbit_activity_import(personicle_user_id, fitbit_user_id, access_token, last_accessed_at, fitbit_oauth_config):
+    """
+    get the list of activities fron fitbit rest API and convert those to personicle events
+
+    TO DO:
+    Check for paginated response from fitbit rest api
+    Download and parse activity tcx file for detailed data
+
+    """
     activities_api_endpoint = fitbit_oauth_config['API_ENDPOINT'] + FITBIT_ACTIVITIES_ENDPOINT.format(user_id=fitbit_user_id)
 
     if last_accessed_at is None:
@@ -50,13 +56,21 @@ def fitbit_activity_import(personicle_user_id, fitbit_user_id, access_token, las
         return False, activities
     
     # Parse every event, send to producer and update the last accessed\
-    fitbit_upload.send_records_to_producer(personicle_user_id, activities['activities'], 'activity')
+    status, resp = fitbit_upload.send_records_to_producer(personicle_user_id, activities['activities'], 'activity')
+    # ADD tcx file download functionality
 
     # CHECK FOR PAGINATED RESPONSE
-
-    return True, len(activities['activities'])
+    
+    return status, resp
 
 def fitbit_sleep_import(personicle_user_id, fitbit_user_id, access_token, last_accessed_at, fitbit_oauth_config):
+    """
+    get the list of sleep events from fitbit rest api
+    parse the sleep events and sleep stages as personicle events and send them to eventhub
+
+    TO DO: 
+    Check for paginated response from the api
+    """
     sleep_api_endpoint = fitbit_oauth_config['API_ENDPOINT'] + FITBIT_SLEEP_LOG_ENDPOINT.format(user_id=fitbit_user_id)
 
     if last_accessed_at is None:
@@ -88,10 +102,10 @@ def fitbit_sleep_import(personicle_user_id, fitbit_user_id, access_token, last_a
         return False, sleep
 
     # Parse every event, send to producer and update the last accessed\
-    fitbit_upload.send_records_to_producer(personicle_user_id, sleep['sleep'], 'sleep')
+    status, resp = fitbit_upload.send_records_to_producer(personicle_user_id, sleep['sleep'], 'sleep')
     # CHECK FOR PAGINATED RESPONSE
 
-    return True, len(sleep['sleep'])
+    return status, resp
 
 def fitbit_intraday_heartrate_import():
     pass
@@ -113,10 +127,11 @@ def initiate_fitbit_data_import(personicle_user_id):
     Action:
     get fitbit access token from sqlite db
     download user activities and data from fitbit api
-    send the data to kafka producer
+    send the data to event hub
 
     Returns:
-    None
+    status: Success status of the operation
+    response: Detailed information about number of records imported from each api endpoint
     """
     fitbit_oauth_config = FITBIT_CONFIG
     # with app.app_context():

@@ -6,6 +6,12 @@ __file_path = os.path.abspath(__file__)
 __dir_path = os.path.dirname(__file_path)
 
 PROJ_LOC=pathlib.Path(__dir_path).parent
+
+# Database url format
+# dialect+driver://username:password@host:port/database
+# postgresql+pg8000://dbuser:kx%25jj5%2Fg@pghost10/appdb
+
+
 SQLITE_DATABASE_LOCATION=os.path.join(PROJ_LOC, "database")
 SQLITE_DATABASE_NAME="user_access_tokens.db"
 

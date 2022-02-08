@@ -78,6 +78,12 @@ jobs:
       CREDENTIALS_DB_NAME: ${{secrets.CREDENTIALSDATABASENAME}}
 
     steps:
+      - name: Test environment variable
+        run:  |
+          echo "Testing environment variables"
+          echo $TEST_ENV_VAR
+        env:
+          TEST_ENV_VAR: 1
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:

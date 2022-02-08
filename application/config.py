@@ -12,7 +12,7 @@ AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro")
 # dialect+driver://username:password@host:port/database
 # postgresql+pg8000://dbuser:kx%25jj5%2Fg@pghost10/appdb
 
-if os.environ.get("INGESTION_PROD", 0) != 1:
+if int(os.environ.get("INGESTION_PROD", '0')) != 1:
     print("in the dev environment")
     print("environment variables: {}".format(list(os.environ.keys())))
     SQLITE_DATABASE_LOCATION=os.path.join(PROJ_LOC, "database")
@@ -38,7 +38,7 @@ if os.environ.get("INGESTION_PROD", 0) != 1:
     os.environ['CREDENTIALS_DB_NAME'] = DB_CONFIG['NAME']
 else:
     HOST_CONFIG = {
-        'HOST_ADDRESS': os.environ['HOST_ADDRESS']
+        'HOST_ADDRESS': os.environ['INGESTION_HOST_ADDRESS']
     }
 
     FITBIT_CONFIG = {

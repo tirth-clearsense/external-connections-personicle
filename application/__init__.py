@@ -1,3 +1,4 @@
+from click import password_option
 from flask import Flask
 # from flask import request, session, redirect
 # from flask_sqlalchemy import SQLAlchemy
@@ -10,11 +11,17 @@ def create_app():
     
     app = Flask(__name__)
     app.secret_key = os.urandom(24)
-    os.makedirs(config.SQLITE_DATABASE_LOCATION, exist_ok=True)
+    # os.makedirs(config.SQLITE_DATABASE_LOCATION, exist_ok=True)
 
     fileConfig('logging.cfg')
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(os.path.join(config.SQLITE_DATABASE_LOCATION, config.SQLITE_DATABASE_NAME))
+    # Add database URI here
+    # Database url format/
+    # dialect+driver://username:password@host:port/database
+    # e.g., postgresql+pg8000://dbuser:kx%25jj5%2Fg@pghost10/appdb
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{username}:{password}@{dbhost}/{dbname}".format(username=os.environ['CREDENTIALS_DB_USER'], password=os.environ['CREDENTIALS_DB_PASSWORD'],
+                                                                                                                dbhost=os.environ['CREDENTIALS_DB_HOST'], dbname=os.environ['CREDENTIALS_DB_NAME'])
+    # app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(os.path.join(config.SQLITE_DATABASE_LOCATION, config.SQLITE_DATABASE_NAME))
 
     models.init_app(app)
     fitbit.init_app(app)

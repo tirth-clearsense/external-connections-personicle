@@ -82,6 +82,7 @@ jobs:
         run:  |
           echo "Testing environment variables"
           echo $TEST_ENV_VAR
+          echo $INGESTION_PROD
         env:
           TEST_ENV_VAR: 1
       - name: Download artifact from build job

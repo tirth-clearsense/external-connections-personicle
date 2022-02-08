@@ -2,15 +2,16 @@ from flask import jsonify
 from flask import request, session, redirect
 from flask import Blueprint
 from flask.wrappers import Response
-
 import requests
 import pprint
 import base64
 from datetime import datetime
 import threading
-
 from application.config import FITBIT_CONFIG, HOST_CONFIG
+from application.okta.helpers import is_access_token_valid, is_authorized
 from application.utils.user_credentials_manager import verify_user_connection, add_access_token
+import json
+
 oauth_config = FITBIT_CONFIG
 host = HOST_CONFIG
 
@@ -23,13 +24,22 @@ from application.models.base import db
 fitbit_routes = Blueprint("fitbit_routes", __name__)
 
 
-@fitbit_routes.route('/', methods=['GET'])
-def test_route():
-    return "Testing connections server"
-
 @fitbit_routes.route('/fitbit', methods=["GET", "POST"])
 def dashboard_home():
-    return True
+    if not is_authorized(request):
+        return "Unauthorized", 401
+   
+    response = {
+        'messages': [
+            {
+                'text': 'Hello, You are authenticated!'
+            }
+        ]
+    }
+
+    return json.dumps(response)
+
+
 
 @fitbit_routes.route('/fitbit/connection', methods=['GET', 'POST'])
 def fitbit_connection():

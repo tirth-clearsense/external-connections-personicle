@@ -34,4 +34,37 @@ if os.environ.get("INGESTION_PROD", 0) != 1:
     os.environ['CREDENTIALS_DB_PASSWORD'] = DB_CONFIG['PASSWORD']
     os.environ['CREDENTIALS_DB_HOST'] = DB_CONFIG['HOST']
     os.environ['CREDENTIALS_DB_NAME'] = DB_CONFIG['NAME']
+else:
+    HOST_CONFIG = {
+        'HOST_ADDRESS': os.environ['HOST_ADDRESS']
+    }
 
+    FITBIT_CONFIG = {
+        'CLIENT_ID': os.environ['FITBITCLIENTID'],
+        'CLIENT_SECRET': os.environ['FITBITCLIENTSECRET'],
+        'REDIRECT_URL': os.environ['FITBITREDIRECTURL'],
+        'AUTH_URL': os.environ['FITBITAUTHURL'],
+        'REQUEST_URL': os.environ['FITBITREQUESTURL'],
+        'API_ENDPOINT': os.environ['FITBITAPIENDPOINT']
+    }
+
+    GOOGLE_FIT_CONFIG = {
+        'CLIENT_ID': os.environ['GOOGLEFITCLIENTID'],
+        'CLIENT_SECRET': os.environ['GOOGLEFITCLIENTSECRET'],
+        'REDIRECT_URL': os.environ['GOOGLEFITREDIRECTURL'],
+        'AUTH_URL': os.environ['GOOGLEFITAUTHURL'],
+        'API_ENDPOINT': os.environ['GOOGLEFITAPIENDPOINT'],
+        'TOKEN_URL': os.environ['GOOGLEFITTOKENURL'],
+        'SECRET_JSON': os.environ['GOOGLEFITSECRETJSON']
+    }
+
+    IOS_APP_CONFIG = {
+        'KEY': os.environ['IOS_APP_KEY']
+    }
+
+    EVENTHUB_CONFIG = {
+        'CONNECTION_STRING': os.environ['EVENTHUB_CONNECTION_STRING'],
+        'EVENTHUB_NAME': os.environ['EVENTHUB_NAME'],
+        'SCHEMA_REGISTRY_FQNS': os.environ['EVENTHUB_SCHEMA_REGISTRY_FQNS'],
+        'SCHEMA_REGISTRY_GROUP': os.environ['EVENTHUB_SCHEMA_REGISTRY_GROUP']
+    }

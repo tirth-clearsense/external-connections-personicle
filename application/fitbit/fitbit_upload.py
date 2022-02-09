@@ -3,7 +3,7 @@ from producer.send_record import send_record
 from producer.send_records_azure import send_records_to_eventhub
 
 from .utils.fitbit_parsers import *
-from application.config import KAFKA_CONFIG
+# from application.config import KAFKA_CONFIG
 import logging
 
 # set Kafka listener port from config file

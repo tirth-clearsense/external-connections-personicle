@@ -1,4 +1,5 @@
 import os
+import json
 import pathlib
 import configparser
 
@@ -42,22 +43,26 @@ else:
     }
 
     FITBIT_CONFIG = {
-        'CLIENT_ID': os.environ['FITBITCLIENTID'],
-        'CLIENT_SECRET': os.environ['FITBITCLIENTSECRET'],
-        'REDIRECT_URL': os.environ['FITBITREDIRECTURL'],
-        'AUTH_URL': os.environ['FITBITAUTHURL'],
-        'REQUEST_URL': os.environ['FITBITREQUESTURL'],
-        'API_ENDPOINT': os.environ['FITBITAPIENDPOINT']
+        'CLIENT_ID': os.environ['FITBIT_CLIENT_ID'],
+        'CLIENT_SECRET': os.environ['FITBIT_CLIENT_SECRET'],
+        'REDIRECT_URL': os.environ['FITBIT_REDIRECT_URL'],
+        'AUTH_URL': os.environ['FITBIT_AUTH_URL'],
+        'REQUEST_URL': os.environ['FITBIT_REQUEST_URL'],
+        'API_ENDPOINT': os.environ['FITBIT_API_ENDPOINT']
     }
 
+    os.makedirs("config_json", exist_ok=True)
+    with open("config_json/google_secret.json", "w") as secrets_file:
+        secrets_file.write(json.dumps(json.loads(os.environ['GOOGLE_FIT_SECRET_JSON'])))
+
     GOOGLE_FIT_CONFIG = {
-        'CLIENT_ID': os.environ['GOOGLEFITCLIENTID'],
-        'CLIENT_SECRET': os.environ['GOOGLEFITCLIENTSECRET'],
-        'REDIRECT_URL': os.environ['GOOGLEFITREDIRECTURL'],
-        'AUTH_URL': os.environ['GOOGLEFITAUTHURL'],
-        'API_ENDPOINT': os.environ['GOOGLEFITAPIENDPOINT'],
-        'TOKEN_URL': os.environ['GOOGLEFITTOKENURL'],
-        'SECRET_JSON': os.environ['GOOGLEFITSECRETJSON']
+        'CLIENT_ID': os.environ['GOOGLE_FIT_CLIENT_ID'],
+        'CLIENT_SECRET': os.environ['GOOGLE_FIT_CLIENT_SECRET'],
+        'REDIRECT_URL': os.environ['GOOGLE_FIT_REDIRECT_URL'],
+        'AUTH_URL': os.environ['GOOGLE_FIT_AUTH_URL'],
+        'API_ENDPOINT': os.environ['GOOGLE_FIT_API_ENDPOINT'],
+        'TOKEN_URL': os.environ['GOOGLE_FIT_TOKEN_URL'],
+        'SECRET_JSON': "config_json/google_secret.json"
     }
 
     IOS_APP_CONFIG = {

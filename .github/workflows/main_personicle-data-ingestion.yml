@@ -29,8 +29,6 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v2
@@ -82,8 +80,6 @@ jobs:
         run:  |
           echo "Testing environment variables"
           echo $TEST_ENV_VAR
-          echo $INGESTION_PROD
-          echo ${{secrets.CREDENTIALSDATABASEUSERNAME}} | sed 's/./& /g'
         env:
           TEST_ENV_VAR: 1
       - name: Download artifact from build job
@@ -91,6 +87,16 @@ jobs:
         with:
           name: python-app
           path: .
+      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+
+      - name: Setup application settings and secrets
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'personicle-data-ingestion'
+          # slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
+          app-settings-json: '${{ secrets.APP_SETTINGS_JSON }}' 
+          # connection-strings-json: '${{ secrets.CONNECTION_STRINGS }}'
+          # general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}' #'General configuration settings as Key Value pairs'
           
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2

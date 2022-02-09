@@ -97,7 +97,7 @@ jobs:
           app-settings-json: '${{ secrets.APP_SETTINGS_JSON }}' 
           # connection-strings-json: '${{ secrets.CONNECTION_STRINGS }}'
           # general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}' #'General configuration settings as Key Value pairs'
-          
+        id: settings
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp

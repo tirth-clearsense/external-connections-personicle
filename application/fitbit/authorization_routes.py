@@ -8,7 +8,7 @@ import base64
 from datetime import datetime
 import threading
 from application.config import FITBIT_CONFIG, HOST_CONFIG
-from application.okta.helpers import is_access_token_valid, is_authorized
+from application.okta.helpers import  is_authorized
 from application.utils.user_credentials_manager import verify_user_connection, add_access_token
 import json
 
@@ -37,7 +37,7 @@ def dashboard_home():
         ]
     }
 
-    return json.dumps(response)
+    return jsonify(response)
 
 
 

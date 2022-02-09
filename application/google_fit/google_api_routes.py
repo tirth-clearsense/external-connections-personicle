@@ -11,7 +11,7 @@ from datetime import datetime
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-
+from application.okta.helpers import  is_authorized
 from application.utils.user_credentials_manager import add_access_token, verify_user_connection
 from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC, HOST_CONFIG
 
@@ -41,8 +41,21 @@ google_API_routes = Blueprint("google_fit_routes", __name__)
 
 @google_API_routes.route('/google-fit')
 def dashboard_home():
-    LOG.info("Google routes accessed: OK")
-    return "Google routes"
+    if not is_authorized(request):
+        return "Unauthorized", 401
+   
+    response = {
+        'messages': [
+            {
+                'text': 'Hello, You are authenticated!'
+            }
+        ]
+    }
+
+    return jsonify(response)
+
+    # LOG.info("Google routes accessed: OK")
+    # return "Google routes"
 
 @google_API_routes.route("/google-fit/connection", methods=['GET', 'POST'])
 def google_fit_connection():

@@ -89,15 +89,15 @@ jobs:
           path: .
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-      - name: Setup application settings and secrets
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: 'personicle-data-ingestion'
-          # slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
-          app-settings-json: '${{ secrets.APP_SETTINGS_JSON }}' 
-          # connection-strings-json: '${{ secrets.CONNECTION_STRINGS }}'
-          # general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}' #'General configuration settings as Key Value pairs'
-        id: settings
+      # - name: Setup application settings and secrets
+      #   uses: azure/appservice-settings@v1
+      #   with:
+      #     app-name: 'personicle-data-ingestion'
+      #     # slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
+      #     app-settings-json: '${{ secrets.APP_SETTINGS_JSON }}' 
+      #     # connection-strings-json: '${{ secrets.CONNECTION_STRINGS }}'
+      #     # general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}' #'General configuration settings as Key Value pairs'
+      #   id: settings
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp

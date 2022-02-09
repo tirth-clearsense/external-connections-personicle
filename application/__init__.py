@@ -5,6 +5,7 @@ from flask import Flask
 import os
 from . import config
 from logging.config import fileConfig
+import logging
 
 def create_app():
     from . import models, fitbit, ios_healthkit, google_fit
@@ -13,7 +14,12 @@ def create_app():
     app.secret_key = os.urandom(24)
     # os.makedirs(config.SQLITE_DATABASE_LOCATION, exist_ok=True)
 
-    fileConfig('logging.cfg')
+    if os.environ.get("INGESTION_PROD", '0') != '1':
+        fileConfig('logging.cfg')
+    else:
+        gunicorn_logger = logging.getLogger('gunicorn.error')
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
 
     # Add database URI here
     # Database url format/

@@ -1,4 +1,3 @@
-from click import password_option
 from flask import Flask
 # from flask import request, session, redirect
 # from flask_sqlalchemy import SQLAlchemy
@@ -17,9 +16,11 @@ def create_app():
     if os.environ.get("INGESTION_PROD", '0') != '1':
         fileConfig('logging.cfg')
     else:
-        gunicorn_logger = logging.getLogger('gunicorn.error')
-        app.logger.handlers = gunicorn_logger.handlers
-        app.logger.setLevel(gunicorn_logger.level)
+        fileConfig('logging.cfg')
+        # TO DO: use replace file based logging with gunicorn logger 
+        # gunicorn_logger = logging.getLogger('gunicorn.error')
+        # app.logger.handlers = gunicorn_logger.handlers
+        # app.logger.setLevel(gunicorn_logger.level)
 
     # Add database URI here
     # Database url format/

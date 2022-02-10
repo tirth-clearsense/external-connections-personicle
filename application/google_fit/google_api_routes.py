@@ -92,7 +92,7 @@ def google_fit_connection():
 
     return redirect(authorization_url)
 
-@google_API_routes.route("/google-fit/oauth/access_token", methods=['GET'])
+@google_API_routes.route("/google-fit/oauth/access_token/", methods=['GET'])
 def get_access_token():
     user_id = session.get("user_id", None)
     if user_id is None:

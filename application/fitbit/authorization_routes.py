@@ -11,7 +11,7 @@ from application.config import FITBIT_CONFIG, HOST_CONFIG
 from application.okta.helpers import  is_authorized
 from application.utils.user_credentials_manager import verify_user_connection, add_access_token
 import json
-
+import asyncio
 oauth_config = FITBIT_CONFIG
 host = HOST_CONFIG
 
@@ -34,6 +34,7 @@ def fitbit_connection():
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
+        # print("hello")
         initiate_fitbit_data_import(session['user_id'])
         return jsonify({"success": True})
     

@@ -45,7 +45,7 @@ def fitbit_activity_import(personicle_user_id, fitbit_user_id, access_token, las
         # send to producer
     # Parse every event, send to producer and update the last accessed\
     fitbit_upload.send_records_to_producer(personicle_user_id, activities['activities'], 'activity')
-
+  
     return True
 
 def fitbit_sleep_import():
@@ -81,7 +81,7 @@ def initiate_fitbit_data_import(personicle_user_id):
 
     fitbit_user_id = user_record.external_user_id
     last_accessed_at = user_record.last_accessed_at
-
+    # print("Reached here")
     fitbit_activity_import(personicle_user_id, fitbit_user_id, user_record.access_token, last_accessed_at, fitbit_oauth_config)
     
     return

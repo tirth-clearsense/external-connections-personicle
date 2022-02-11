@@ -1,6 +1,6 @@
 from flask import jsonify
 from flask import request, session, redirect
-from flask import Blueprint
+from flask import Blueprint, g
 from flask.wrappers import Response
 import requests
 import pprint
@@ -17,34 +17,17 @@ host = HOST_CONFIG
 
 # from application.utils.user_credential_manager import add_access_token
 from .data_import_module import initiate_fitbit_data_import
-
+from application.okta.helpers import is_authorized
 # from application import app
 from application.models.base import db
 
 fitbit_routes = Blueprint("fitbit_routes", __name__)
 
-
-@fitbit_routes.route('/fitbit', methods=["GET", "POST"])
-def dashboard_home():
-    if not is_authorized(request):
-        return "Unauthorized", 401
-   
-    response = {
-        'messages': [
-            {
-                'text': 'Hello, You are authenticated!'
-            }
-        ]
-    }
-
-    return jsonify(response)
-
-
-
 @fitbit_routes.route('/fitbit/connection', methods=['GET', 'POST'])
 def fitbit_connection():
     session.clear()
     request_data = request.args
+    
     session['user_id'] = request.args.get("user_id", None)
     if session['user_id'] is None:
         return Response("User not logged in", 401)

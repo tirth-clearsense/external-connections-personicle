@@ -7,7 +7,7 @@ from logging.config import fileConfig
 from flask_cors import CORS
 
 def create_app():
-    from . import models, fitbit, ios_healthkit, google_fit
+    from . import models, fitbit, ios_healthkit, google_fit,okta_authenticate
     
     app = Flask(__name__)
     CORS(app)
@@ -18,11 +18,12 @@ def create_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(os.path.join(config.SQLITE_DATABASE_LOCATION, config.SQLITE_DATABASE_NAME))
     
+    okta_authenticate.init_app(app)
     models.init_app(app)
     fitbit.init_app(app)
     ios_healthkit.init_app(app)
     google_fit.init_app(app)
-  
+    
     # services.init_app(app)
     return app
 

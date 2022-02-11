@@ -39,21 +39,6 @@ APP_SCOPE = [
 from application.models.base import db
 google_API_routes = Blueprint("google_fit_routes", __name__)
 
-@google_API_routes.route('/google-fit')
-def dashboard_home():
-    if not is_authorized(request):
-        return "Unauthorized", 401
-   
-    response = {
-        'messages': [
-            {
-                'text': 'Hello, You are authenticated!'
-            }
-        ]
-    }
-
-    return jsonify(response)
-
     # LOG.info("Google routes accessed: OK")
     # return "Google routes"
 

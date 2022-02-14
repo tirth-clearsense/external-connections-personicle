@@ -46,9 +46,9 @@ def fitbit_connection():
         print("here")
         initiate_fitbit_data_import(session['user_id'])
         return jsonify({"success": True})
-        
+
     print("hi")
-    return redirect('/fitbit/oauth/code-callback/')
+    return redirect(f"/fitbit/oauth/code-callback/user_id={session['user_id']}")
     
 
 # OAuth call back with the client token
@@ -56,6 +56,7 @@ def fitbit_connection():
 @fitbit_routes.route('/fitbit/oauth/code-callback/')
 def get_token():
     # print("hi")
+    session['user_id'] = request.args.get("user_id", None)
     if session['user_id'] is None:
         return Response("User not logged in", 401)
     scope = "activity%20heartrate%20location%20nutrition%20profile%20sleep%20weight"

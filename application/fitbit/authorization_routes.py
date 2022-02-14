@@ -30,7 +30,7 @@ def test_route():
 @fitbit_routes.route('/fitbit/connection', methods=['GET', 'POST'])
 def fitbit_connection():
     if not is_authorized(request):
-        print("hello")
+        pprint.pprint("not_authorized")
         return "Unauthorized", 401
     
     session.clear()
@@ -43,20 +43,20 @@ def fitbit_connection():
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
-        print("here")
+        pprint.pprint("here")
         initiate_fitbit_data_import(session['user_id'])
         return jsonify({"success": True})
-
-    print("hi")
-    return redirect(f"/fitbit/oauth/code-callback/user_id={session['user_id']}")
+    pprint.pprint("hi")
+    pprint.pprint(session['user_id'])
+    return redirect('/fitbit/oauth/code-callback/')
     
 
 # OAuth call back with the client token
 # store this and use to get access code
 @fitbit_routes.route('/fitbit/oauth/code-callback/')
 def get_token():
-    # print("hi")
-    session['user_id'] = request.args.get("user_id", None)
+    pprint.pprint("inside /code-callback")
+    pprint.pprint(session['user_id'])
     if session['user_id'] is None:
         return Response("User not logged in", 401)
     scope = "activity%20heartrate%20location%20nutrition%20profile%20sleep%20weight"

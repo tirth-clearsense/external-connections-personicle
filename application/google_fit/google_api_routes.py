@@ -45,6 +45,10 @@ google_API_routes = Blueprint("google_fit_routes", __name__)
 @google_API_routes.route("/google-fit/connection", methods=['GET', 'POST'])
 def google_fit_connection():
     # print("in google route")
+
+    if not is_authorized(request):
+        print("not_authorized")
+        return "Unauthorized", 401
     user_id = request.args.get("user_id", None)
     if user_id is None:
         LOG.error("Unauthorised access: Denied")

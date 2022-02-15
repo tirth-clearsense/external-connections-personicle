@@ -49,7 +49,7 @@ def fitbit_connection():
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
         pprint.pprint("here")
         initiate_fitbit_data_import(session['user_id'])
-        redirect('http://localhost:3000/testPage')
+        return redirect('http://localhost:3000/testPage')
         return jsonify({"success": True})
 
     return redirect('/fitbit/oauth/code-callback/')

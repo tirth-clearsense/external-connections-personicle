@@ -130,8 +130,12 @@ def get_access_token():
         result = jsonify(success=False)
     
     initiate_fitbit_data_import(user_id)
-    logging.info(result['success'])
+
     logging.info("Reached here")
-    return redirect('http://localhost:3000')
+    logging.info(f"Status code {result.status_code}")
+    
+    # if result.status_code == 200:
+    #     return redirect('http://localhost:3000/testPage?success=true')
+    # return redirect('http://localhost:3000')
     return result
 

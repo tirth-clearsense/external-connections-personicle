@@ -1,7 +1,9 @@
+import re
 from flask import jsonify
 from flask import request, session, redirect
 from flask import Blueprint, g
 from flask.wrappers import Response
+from flask_cors import CORS, cross_origin
 import requests
 import pprint
 import base64
@@ -22,6 +24,7 @@ from application.okta.helpers import is_authorized
 from application.models.base import db
 
 fitbit_routes = Blueprint("fitbit_routes", __name__)
+CORS(fitbit_routes)
 
 @fitbit_routes.route('/', methods=['GET'])
 def test_route():
@@ -29,14 +32,16 @@ def test_route():
 
 @fitbit_routes.route('/fitbit/connection', methods=['GET', 'POST'])
 def fitbit_connection():
+    print("hello")
     if not is_authorized(request):
-        pprint.pprint("not_authorized")
+        print("not_authorized")
         return "Unauthorized", 401
-    
+   
     session.clear()
     request_data = request.args
-    
+   
     session['user_id'] = request.args.get("user_id", None)
+   
     if session['user_id'] is None:
         return Response("User not logged in", 401)
     
@@ -48,13 +53,7 @@ def fitbit_connection():
         return jsonify({"success": True})
     pprint.pprint("hi")
     pprint.pprint(session['user_id'])
-    return redirect('/fitbit/oauth/code-callback/')
-    
-
-# OAuth call back with the client token
-# store this and use to get access code
-@fitbit_routes.route('/fitbit/oauth/code-callback/')
-def get_token():
+    # return redirect('/fitbit/oauth/code-callback/')
     pprint.pprint("inside /code-callback")
     pprint.pprint(session['user_id'])
     if session['user_id'] is None:
@@ -71,11 +70,36 @@ def get_token():
         return redirect("{}?client_id={}&redirect_uri={}&scope={}&response_type=code".format(oauth_config['AUTH_URL'],
                 oauth_config['CLIENT_ID'] ,host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL'], scope))
     return "Already connected"
+    
+
+# OAuth call back with the client token
+# store this and use to get access code
+# @fitbit_routes.route('/fitbit/oauth/code-callback/')
+# def get_token():
+#     session['user_id'] = "00u3sfiunsmoyyiG35d7"
+#     pprint.pprint("inside /code-callback")
+#     pprint.pprint(session['user_id'])
+
+#     if session['user_id'] is None:
+#         return Response("User not logged in", 401)
+#     scope = "activity%20heartrate%20location%20nutrition%20profile%20sleep%20weight"
+#     print(session.keys())
+    
+#     if 'user_id' not in session:
+#         return 'Use proper channels'
+#     if 'request_sent' not in session:
+#         print("Redirect url: {}".format(host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL']))
+#         session['request_sent'] = True
+#         print("request sent")
+#         return redirect("{}?client_id={}&redirect_uri={}&scope={}&response_type=code".format(oauth_config['AUTH_URL'],
+#                 oauth_config['CLIENT_ID'] ,host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL'], scope))
+#     return "Already connected"
 
 
 # Store the access token in sqlite db and initiate data import
 @fitbit_routes.route('/fitbit/oauth/access-token/')
 def get_access_token():
+    
     if session['user_id'] is None:
         return Response("User not logged in", 401)
     # need personicle user id in session

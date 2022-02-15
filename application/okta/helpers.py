@@ -6,6 +6,7 @@ loop = asyncio.get_event_loop()
 
 def is_authorized(request):
     try:
+        print("hereee")
         token = request.headers.get("Authorization").split("Bearer ")[1]
         return is_access_token_valid(token, config["issuer"])
     except Exception:
@@ -13,9 +14,11 @@ def is_authorized(request):
 
 
 def is_access_token_valid(token, issuer):
+    print("is access token valid")
     jwt_verifier = AccessTokenVerifier(issuer=issuer, audience='api://default')
     try:
         loop.run_until_complete(jwt_verifier.verify(token))
+        print("success")
         return True
     except Exception:
         return False

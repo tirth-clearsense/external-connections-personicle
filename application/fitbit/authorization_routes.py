@@ -67,7 +67,7 @@ def fitbit_connection():
         print("Redirect url: {}".format(host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL']))
         session['request_sent'] = True
         print("request sent")
-        return redirect("{}?client_id={}&redirect_uri={}&scope={}&response_type=code".format(oauth_config['AUTH_URL'],
+        return jsonify("{}?client_id={}&redirect_uri={}&scope={}&response_type=code".format(oauth_config['AUTH_URL'],
                 oauth_config['CLIENT_ID'] ,host['HOST_ADDRESS'] + oauth_config['REDIRECT_URL'], scope))
     return "Already connected"
     

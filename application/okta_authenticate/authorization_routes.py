@@ -11,11 +11,5 @@ CORS(okta_routes)
 def authenticate():
     if not is_authorized(request):
         return "Unauthorized", 401
-    # return jsonify({"message":True})
-
-    # redir = redirect(url_for('fitbit_routes.fitbit_connection'))
-    print(request.headers.get("Authorization"))
-    # redir.headers['headers'] = request.headers
-    # return redir
-    return redirect(f"/fitbit/connection?user_id={request.args.get('user_id', None)}")
-    # return jsonify({"message": True})
+   
+    return jsonify({"message": True})

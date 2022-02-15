@@ -24,7 +24,7 @@ from application.okta.helpers import is_authorized
 from application.models.base import db
 
 fitbit_routes = Blueprint("fitbit_routes", __name__)
-CORS(fitbit_routes)
+CORS(fitbit_routes,resources={r"/*": {"origins": "*"}})
 
 @fitbit_routes.route('/', methods=['GET'])
 def test_route():

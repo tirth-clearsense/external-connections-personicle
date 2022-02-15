@@ -1,3 +1,4 @@
+import logging
 import re
 from flask import jsonify
 from flask import request, session, redirect
@@ -129,5 +130,8 @@ def get_access_token():
         result = jsonify(success=False)
     
     initiate_fitbit_data_import(user_id)
+    logging.info(result)
+    logging.info("Reached here")
+    redirect('http://localhost:3000')
     return result
 

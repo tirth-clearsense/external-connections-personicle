@@ -50,7 +50,6 @@ def fitbit_connection():
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
         pprint.pprint("here")
         initiate_fitbit_data_import(session['user_id'])
-        return redirect('http://localhost:3000/testPage')
         return jsonify({"success": True})
 
     return redirect('/fitbit/oauth/code-callback/')
@@ -130,7 +129,7 @@ def get_access_token():
         result = jsonify(success=False)
     
     initiate_fitbit_data_import(user_id)
-
+    
     logging.info("Reached here")
     logging.info(f"Status code {result.status_code}")
     

@@ -27,4 +27,5 @@ else
 
 fi
 
-gunicorn --certfile cert.pem --keyfile key.pem --bind 0.0.0.0:8000 run:app
+# gunicorn --certfile cert.pem --keyfile key.pem --bind 0.0.0.0:8000 run:app
+gunicorn --bind 0.0.0.0:8000 run:app

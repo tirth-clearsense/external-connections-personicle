@@ -9,7 +9,7 @@ DATA_DICTIONARY = {
     "com.google.cycling.pedaling.cadence": "cycling_cadence",
     "com.google.cycling.pedaling.cumulative": "cumulative_cycling_cadence",
     "com.google.heart_minutes": "heart_intensity_minutes",
-    "com.google.active_minutes": "active_time",
+    "com.google.active_minutes": "active_minutes",
     "com.google.power.sample": "power",
     "com.google.step_count.cadence": "step_cadence",
     "com.google.step_count.delta": "step_count",

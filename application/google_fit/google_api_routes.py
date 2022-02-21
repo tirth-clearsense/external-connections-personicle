@@ -56,8 +56,15 @@ def google_fit_connection():
     LOG.info("Google fit authorization for user: {}".format(session['user_id']))
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='google-fit'):
         LOG.info("User {} has active access token for google fit".format(session['user_id']))
-        initiate_google_fit_data_import(session['user_id'])
-        return jsonify({"success": True})
+        try:
+            resp = initiate_google_fit_data_import(user_id)
+            success= True
+        except Exception as e:
+            LOG.error(e)
+            resp = {'error': str(e)}
+            success = False
+        result = jsonify(success=success, resp=resp)
+        return result
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         os.path.join(PROJ_LOC, GOOGLE_FIT_CONFIG['SECRET_JSON']),
         scopes=APP_SCOPE)
@@ -73,7 +80,7 @@ def google_fit_connection():
     authorization_url, state = flow.authorization_url(
         access_type='offline', include_granted_scopes='true', enable_reauth_refresh='true')
 
-    print(authorization_url)
+    # print(authorization_url)
     # Enable offline access so that you can refresh an access token without
     # re-prompting the user for permission. Recommended for web server apps.
         
@@ -82,7 +89,7 @@ def google_fit_connection():
 
     return redirect(authorization_url)
 
-@google_API_routes.route("/google-fit/oauth/access_token", methods=['GET'])
+@google_API_routes.route("/google-fit/oauth/access_token/", methods=['GET'])
 def get_access_token():
     user_id = session.get("user_id", None)
     if user_id is None:

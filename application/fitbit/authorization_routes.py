@@ -1,5 +1,4 @@
-import logging
-import re
+
 from flask import jsonify
 from flask import request, session, redirect
 from flask import Blueprint, g
@@ -10,6 +9,8 @@ import pprint
 import base64
 from datetime import datetime
 import threading
+import logging
+
 from application.config import FITBIT_CONFIG, HOST_CONFIG
 from application.okta.helpers import  is_authorized
 from application.utils.user_credentials_manager import verify_user_connection, add_access_token
@@ -18,6 +19,8 @@ import asyncio
 
 oauth_config = FITBIT_CONFIG
 host = HOST_CONFIG
+
+LOG = logging.getLogger(__name__)
 
 # from application.utils.user_credential_manager import add_access_token
 from .data_import_module import initiate_fitbit_data_import
@@ -43,17 +46,21 @@ def fitbit_connection():
     session['user_id'] = request.args.get("user_id", None)
    
     if session['user_id'] is None:
+        LOG.error("Unauthorised access: Denied")
         return Response("User not logged in", 401)
     
     print(request_data)
     session['redirect_url'] = request_data.get("redirect_uri")
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='fitbit'):
-        pprint.pprint("here")
-        initiate_fitbit_data_import(session['user_id'])
-        return jsonify({"success": True})
-
-    return redirect('/fitbit/oauth/code-callback/')
-   
+        status, activities_response = initiate_fitbit_data_import(session['user_id'])
+        if status:
+            LOG.info("Returning {}".format({'success': True, 'response': activities_response}))
+            return jsonify({'success': True, 'response': activities_response})
+        else:
+            LOG.info("Returning {}".format({'success': False, 'response': activities_response}))
+            return jsonify({'success': False, 'response': activities_response})
+    
+    return redirect('/fitbit/oauth/code-callback')
     
 
 # OAuth call back with the client token
@@ -121,20 +128,17 @@ def get_access_token():
             db.session.add(user_record)
         else:
             pass
-        result = jsonify(success=True)
         db.session.commit()
     except Exception as e:
         print(e)
         db.session.rollback()
-        result = jsonify(success=False)
+        return jsonify(success=False)
     
-    initiate_fitbit_data_import(user_id)
-    
-    logging.info("Reached here")
-    logging.info(f"Status code {result.status_code}")
-    
-    # if result.status_code == 200:
-    #     return redirect('http://localhost:3000/testPage?success=true')
-    # return redirect('http://localhost:3000')
-    return result
+    status, activities_response = initiate_fitbit_data_import(user_id)
+    if status:
+        LOG.info("Returning {}".format({'success': True, 'response': activities_response}))
+        return jsonify({'success': True, 'response': activities_response})
+    else:
+        LOG.info("Returning {}".format({'success': False, 'response': activities_response}))
+        return jsonify({'success': False, 'response': activities_response})
 

@@ -2,10 +2,14 @@ from flask import Flask
 # from flask import request, session, redirect
 # from flask_sqlalchemy import SQLAlchemy
 import os
+
 from . import config
 from logging.config import fileConfig
 from flask_cors import CORS
 import logging
+
+
+# LOG = logging.getLogger()
 
 def create_app():
     from . import models, fitbit, ios_healthkit, google_fit,okta_authenticate
@@ -26,7 +30,16 @@ def create_app():
 
    
     print("Setting up okta")
+    if os.environ.get("INGESTION_PROD", "0") == 1:
+        # in prod env, need to create okta config json file from env variable
+        os.makedirs("config_json", exist_ok=True)
+        with open("config_json/client_secrets.json", "w") as fp:
+            fp.write(os.environ.get("OKTA_SECRETS_JSON", "MISSING_OKTA_FILE"))
+        if "OKTA_SECRETS_JSON" not in os.environ:
+            print("Missing okta secrets in environment")
+            # LOG.error("Missing okta secrets in environment")
     try:
+        
         okta_authenticate.init_app(app)
     except Exception as e:
         print(e)

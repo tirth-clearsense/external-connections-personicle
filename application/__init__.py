@@ -25,7 +25,7 @@ def create_app():
         # app.logger.setLevel(gunicorn_logger.level)
 
    
-    
+    print("Setting up okta")
     okta_authenticate.init_app(app)
     # Add database URI here
     # Database url format/
@@ -36,7 +36,10 @@ def create_app():
                                                                                                                 dbhost=os.environ['CREDENTIALS_DB_HOST'], dbname=os.environ['CREDENTIALS_DB_NAME'])
     # app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{}".format(os.path.join(config.SQLITE_DATABASE_LOCATION, config.SQLITE_DATABASE_NAME))
 
+    print("Setting up sqlalchemy")
     models.init_app(app)
+    
+    print("Setting up data apps")
     fitbit.init_app(app)
     ios_healthkit.init_app(app)
     google_fit.init_app(app)

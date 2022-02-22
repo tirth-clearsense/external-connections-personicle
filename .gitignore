@@ -144,3 +144,5 @@ config_json/*
 
 # ignore certificates
 certificates/*
+
+*.DS_STORE

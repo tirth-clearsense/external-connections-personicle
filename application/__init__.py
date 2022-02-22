@@ -31,7 +31,7 @@ def create_app():
 
    
     print("Setting up okta")
-    if os.environ.get("INGESTION_PROD", "0") == 1:
+    if os.environ.get("INGESTION_PROD", "0") == '1':
         # in prod env, need to create okta config json file from env variable
         os.makedirs("config_json", exist_ok=True)
         pprint.pprint(os.environ.get("OKTA_SECRETS_JSON", "MISSING_OKTA_FILE"))

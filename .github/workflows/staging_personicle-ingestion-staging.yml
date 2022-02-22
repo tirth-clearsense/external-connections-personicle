@@ -2,12 +2,12 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - personicle-data-ingestion
+name: Build and deploy Python app to Azure Web App - personicle-ingestion-staging
 
 on:
   push:
     branches:
-      - main
+      - staging
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v1
         with:
-          python-version: '3.9'
+          python-version: '3.8'
 
       - name: Create and start virtual environment
         run: |
@@ -29,6 +29,8 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
+        
+      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v2
@@ -87,21 +89,11 @@ jobs:
         with:
           name: python-app
           path: .
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
-
-      # - name: Setup application settings and secrets
-      #   uses: azure/appservice-settings@v1
-      #   with:
-      #     app-name: 'personicle-data-ingestion'
-      #     # slot-name: 'staging'  # Optional and needed only if the settings have to be configured on the specific deployment slot
-      #     app-settings-json: '${{ secrets.APP_SETTINGS_JSON }}' 
-      #     # connection-strings-json: '${{ secrets.CONNECTION_STRINGS }}'
-      #     # general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}' #'General configuration settings as Key Value pairs'
-      #   id: settings
+          
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-          app-name: 'personicle-data-ingestion'
+          app-name: 'personicle-ingestion-staging'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_737BB9DB4A1043369194B2A144011139 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2E705BE8A0834F83A4EA6263FD2646F3 }}

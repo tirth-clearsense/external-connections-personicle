@@ -1,5 +1,5 @@
 # external-connections-personicle
-API server for managing data import from 3rd party connections (such as fitbit) to personicle. We have provided instructions for running and testing the app server on your local dev environment, please contact the repository owner/administrators for access to staging environment. Changes to the prod environment can only be made once approved by the administrators.
+API server for managing data import from 3rd party connections (such as fitbit) to personicle. We have provided instructions for running and testing the app server on your local dev environment, please contact the repository administrators for access to staging environment. Changes to the prod environment can only be made once approved by the administrators.
 
 
 # Getting started

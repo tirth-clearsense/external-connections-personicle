@@ -26,7 +26,11 @@ def create_app():
 
    
     print("Setting up okta")
-    okta_authenticate.init_app(app)
+    try:
+        okta_authenticate.init_app(app)
+    except Exception as e:
+        print(e)
+        raise e
     # Add database URI here
     # Database url format/
     # dialect+driver://username:password@host:port/database

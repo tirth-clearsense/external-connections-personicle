@@ -1,7 +1,6 @@
-// DEPRECATED
 {
     "type": "record",
-    "name": "fitbit_datastream_record",
+    "name": "com.personicle.individual.datastream.base.integer",
     "fields": [
         {
             "name": "individual_id",
@@ -13,7 +12,7 @@
             "logicalType" : "timestamp-millis"
         },
         {
-            "name": "stream",
+            "name": "source",
             "type": "string"
         },
         {

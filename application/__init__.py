@@ -62,6 +62,7 @@ def create_app():
     fitbit.init_app(app)
     ios_healthkit.init_app(app)
     google_fit.init_app(app)
+    print("application object created")
     
     # services.init_app(app)
     return app

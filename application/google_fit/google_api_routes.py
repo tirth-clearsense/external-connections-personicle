@@ -1,4 +1,5 @@
 import logging
+import traceback
 from urllib import response
 from flask import request, session, redirect, url_for
 from flask import Blueprint
@@ -150,6 +151,10 @@ def get_access_token():
     # return resp
     # data_import_thread = threading.Thread(target=initiate_google_fit_data_import, args=(user_id,))
     # data_import_thread.start()
-    resp = initiate_google_fit_data_import(user_id)
-    result = jsonify(success=True, resp=resp)
-    return result
+    try:
+        resp = initiate_google_fit_data_import(user_id)
+        result = jsonify(success=True, resp=resp)
+        return result
+    except Exception as e:
+        LOG.error(traceback.format_exc())
+        return jsonify(success=False)

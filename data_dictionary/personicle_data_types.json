@@ -2,7 +2,22 @@
     "com.personicle": {
         "individual": {
             "events": {
+                "com.personicle.individual.events.exercise": {
+                    "parameters":{
+                        "duration": {
+                            "ValueType": "Integer",
+                            "Unit": "seconds"
+                        },
+                        "source_device": {
+                            "ValueType": "String",
+                            "Unit": "NULL"
+                        }
+                    }
 
+                },
+                "com.personicle.individual.events.exercise.running": {
+                    "parameters":{}
+                }
             },
             "datastreams": {
                 "com.personicle.individual.datastream.heartrate": {
@@ -65,6 +80,12 @@
                     "TableName": "cycling_cadence",
                     "base_schema": "numeric_datastream_schema.avsc"
                 },
+                "com.personicle.individual.datastream.cycling.cumulative_cadence": {
+                    "ValueType": "Numeric",
+                    "Unit": "rpm",
+                    "TableName": "cumulative_cycling_cadence",
+                    "base_schema": "numeric_datastream_schema.avsc"
+                },
                 "com.personicle.individual.datastream.cycling.power": {
                     "ValueType": "Numeric",
                     "Unit": "watts",
@@ -76,6 +97,12 @@
                     "Unit": "stepsperminute",
                     "TableName": "step_cadence",
                     "base_schema": "numeric_datastream_schema.avsc"
+                },
+                "com.personicle.individual.datastream.step.count": {
+                    "ValueType": "Integer",
+                    "Unit": "stepsperminute",
+                    "TableName": "step_count",
+                    "base_schema": "integer_datastream_schema.avsc"
                 },
                 "com.personicle.individual.datastream.body_fat": {
                     "ValueType": "Numeric",

@@ -1,5 +1,7 @@
 import time
-from urllib import response
+import traceback
+from flask import Response
+
 from application.models.external_connections import ExternalConnections
 from application.models.base import db
 
@@ -104,7 +106,7 @@ def google_fit_dataset_import(personicle_user_id, access_token, last_accessed_at
         # get the data for the source
         # define the time range for the dataset id
         
-        number_of_datapoints_added = get_dataset_for_datasource(access_token, dataset_name, dataset_id, personicle_mapping)
+        number_of_datapoints_added = get_dataset_for_datasource(access_token, dataset_name, dataset_id, personicle_mapping, personicle_user_id)
 
         resp[personicle_mapping] = resp.get(personicle_mapping, 0) + number_of_datapoints_added
         
@@ -143,12 +145,18 @@ def initiate_google_fit_data_import(personicle_user_id, *args, **kwargs):
     datasets_added = google_fit_dataset_import(personicle_user_id, user_record.access_token, last_accessed_at)
 
     resp = datasets_added
-    resp['sessions_added'] = num_sessions
+    if session_status:
+        resp['sessions_added'] = num_sessions
 
     if num_sessions > 0:
         user_record.last_accessed_at = datetime.utcnow()
-    db.session.commit()
-    return resp
+    try:
+        db.session.commit()
+        return resp
+    except Exception as e:
+        db.session.rollback()
+        LOG.error(traceback.format_exc())
+        raise e
     # get access token from sqlite
     # call api end points for different data scopes included in the request
     # these include activities, sleep, different data streams such as heart rate , steps, weight etc.

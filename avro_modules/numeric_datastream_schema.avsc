@@ -1,32 +1,43 @@
 {
+    "name": "real_valued_stream_message",
+    "namespace": "com.personicle.individual.datastreams.base.num_stream",
     "type": "record",
-    "name": "com.personicle.individual.datastream.base.integer",
     "fields": [
         {
-            "name": "individual_id",
+            "name":"streamName",
             "type": "string"
         },
         {
-            "name": "timestamp",
-            "type": "long",
-            "logicalType" : "timestamp-millis"
+            "name": "individual_id",
+            "type": "string"
         },
         {
             "name": "source",
             "type": "string"
         },
         {
-            "name": "value",
-            "type": "numeric"
-        },
-        {
-            "name": "unit",
-            "type": "string"
-        },
-        {
             "name": "confidence",
-            "type": "int",
-            "default": -1
+            "type": ["float", "null"]
+        },
+        {
+            "name":"unit",
+            "type":["string", "null"]
+        },
+        {
+            "name": "dataPoints",
+            "type": {
+                "type":"array", "items":[
+                    {
+                        "name": "datapoints",
+                        "type":"record",
+                        "fields":[
+                            {"name": "timestamp", "type":"string"},
+                            {"name": "value", "type":"float"}
+                        ]
+                    }
+                ]
+            }
+            
         }
     ]
 }

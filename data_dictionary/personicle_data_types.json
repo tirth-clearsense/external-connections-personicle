@@ -30,7 +30,7 @@
                     "ValueType": "Numeric",
                     "Unit": "minutes",
                     "TableName": "heart_intensity_minutes",
-                    "base_schema": "integer_datastream_schema.avsc"
+                    "base_schema": "numeric_datastream_schema.avsc"
                 },
                 "com.personicle.individual.datastream.active_minutes": {
                     "ValueType": "Numeric",

@@ -89,8 +89,8 @@ def google_datastream_parser(raw_records, stream_name, stream_info, personicle_u
 
     for point in data_points:
         return_message['dataPoints'].append({
-            "timestamp": point['endTimeNanos'],
-            "value": _datapoint_formatter(point['value'], stream_info['ValueType'])
+            "timestamp": str(datetime.fromtimestamp(int(point['endTimeNanos'])/10**9)),# point['endTimeNanos'],
+            "value": _datapoint_formatter(point['value'][0], stream_info['ValueType'])
         })
     return return_message
     

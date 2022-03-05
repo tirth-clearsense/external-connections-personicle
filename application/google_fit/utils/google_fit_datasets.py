@@ -93,7 +93,8 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id, personicle_
 
         # format the records to match the avro schema
         formatted_records = google_datastream_parser(dataset, personicle_data_type, personicle_data_description, personicle_user_id)
-        LOG.info("Formatted records: {}".format(formatted_records))
+        LOG.info("Formatted records: {}".format(json.dumps(formatted_records, indent=2)))
+        LOG.info("Validating records against schema object: {}".format(json.dumps(personicle_data_description, indent=2)))
         # validate if the data points match the avro schema
         if formatted_records is None:
             LOG.info("Total data points added for source {}: {}".format(datasource, total_data_points))

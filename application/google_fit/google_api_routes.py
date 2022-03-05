@@ -61,7 +61,7 @@ def google_fit_connection():
             resp = initiate_google_fit_data_import(user_id)
             success= True
         except Exception as e:
-            LOG.error(e)
+            LOG.error(traceback.format_exc(e))
             resp = {'error': str(e)}
             success = False
         result = jsonify(success=success, resp=resp)

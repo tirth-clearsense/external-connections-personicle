@@ -88,7 +88,7 @@ def google_fit_dataset_import(personicle_user_id, access_token, last_accessed_at
         end_time = time.time_ns()
         start_time = int(end_time - timedelta(days=365).total_seconds()*1000000000)
     else:
-        start_time = int(last_accessed_at.timestamp())*1000000000
+        start_time = int(last_accessed_at.timestamp())*1000000000 + 1
         end_time = time.time_ns()
     dataset_id = "{}-{}".format(start_time, end_time)
 

@@ -7,7 +7,7 @@ __file_path = os.path.abspath(__file__)
 __dir_path = os.path.dirname(__file_path)
 
 PROJ_LOC=pathlib.Path(__dir_path).parent
-AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro")
+AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro_modules")
 
 # Database url format
 # dialect+driver://username:password@host:port/database

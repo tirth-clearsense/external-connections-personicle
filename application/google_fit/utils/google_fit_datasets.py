@@ -1,9 +1,11 @@
 import json
+import traceback
 import requests
 import logging
 from data_dictionary import find_datastream
 from avro_modules import validate_datastream_schema
 from .google_fit_parsers import google_datastream_parser
+from producer.send_datastreams_to_azure import datastream_producer
 
 LOG = logging.getLogger(__name__)
 DATA_SOURCE_URL = "https://www.googleapis.com/fitness/v1/users/me/dataSources"
@@ -105,9 +107,16 @@ def get_dataset_for_datasource(access_token, datasource, dataset_id, personicle_
             LOG.info("Total data points added for source {}: {}".format(datasource, total_data_points))
             LOG.error("formatted records do not match the specified schema: {} \nRecords: {}".format(personicle_data_description["base_schema"], json.dumps(formatted_records, indent=2)))
             return total_data_points
-        total_data_points += len(dataset['point'])
 
         # send data to event hub topic
+        try:
+            datastream_producer(validated_records)
+        except Exception as e:
+            LOG.info("Total data points added for source {}: {}".format(datasource, total_data_points))
+            LOG.error(traceback.format_exc())
+            return total_data_points
+
+        total_data_points += len(dataset['point'])
 
         # get next page token
         next_page_token = dataset.get('nextPageToken', None)

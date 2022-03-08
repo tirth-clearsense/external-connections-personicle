@@ -16,9 +16,9 @@ def google_activity_parser(raw_event, personicle_user_id):
     epoch = datetime.utcfromtimestamp(0).replace(tzinfo=None)
     new_event_record['individual_id'] = personicle_user_id
     # timestamp format 2021-11-25T09:27:30.000-08:00
-    new_event_record['start_time'] = int(raw_event['startTimeMillis'])
+    new_event_record['start_time'] = str(datetime.utcfromtimestamp(int(raw_event['startTimeMillis'])/1000.0))
     duration = int(raw_event['endTimeMillis']) - int(raw_event['startTimeMillis'])
-    new_event_record['end_time'] = int(raw_event['endTimeMillis'])
+    new_event_record['end_time'] = str(datetime.utcfromtimestamp(int(raw_event['endTimeMillis'])/1000.0))
 
     new_event_record['event_name'] = raw_event['name']
     new_event_record['source'] = 'google-fit'

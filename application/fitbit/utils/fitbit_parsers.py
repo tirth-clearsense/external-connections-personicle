@@ -10,9 +10,13 @@ def fitbit_activity_parser(raw_event, personicle_user_id):
     epoch = datetime.utcfromtimestamp(0).replace(tzinfo=None)
     new_event_record['individual_id'] = personicle_user_id
     # timestamp format 2021-11-25T09:27:30.000-08:00
-    new_event_record['start_time'] = int((datetime.strptime(raw_event['startTime'], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(pytz.utc).replace(tzinfo=None)-epoch).total_seconds()*1000)
+    start_date_object = datetime.strptime(raw_event['startTime'], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(pytz.utc).replace(tzinfo=None)
+    # new_event_record['start_time'] = int((datetime.strptime(raw_event['startTime'], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(pytz.utc).replace(tzinfo=None)-epoch).total_seconds()*1000)
+    new_event_record['start_time'] = str(start_date_object)
     duration = timedelta(seconds=raw_event['originalDuration']/1000)
-    new_event_record['end_time'] = int(new_event_record['start_time'] + duration.total_seconds()*1000)
+    end_date_object = start_date_object + duration
+    # new_event_record['end_time'] = int(new_event_record['start_time'] + duration.total_seconds()*1000)
+    new_event_record['end_time'] = str(end_date_object)
 
     new_event_record['event_name'] = "activity"
     new_event_record['source'] = 'fitbit'

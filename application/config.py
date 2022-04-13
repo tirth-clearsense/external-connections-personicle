@@ -7,7 +7,7 @@ __file_path = os.path.abspath(__file__)
 __dir_path = os.path.dirname(__file_path)
 
 PROJ_LOC=pathlib.Path(__dir_path).parent
-AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro")
+AVRO_SCHEMA_LOC=os.path.join(PROJ_LOC, "avro_modules")
 
 # Database url format
 # dialect+driver://username:password@host:port/database
@@ -32,6 +32,8 @@ if int(os.environ.get("INGESTION_PROD", '0')) != 1:
     EVENTHUB_CONFIG = __app_config['EVENTHUB']
 
     DB_CONFIG = __app_config['CREDENTIALS_DATABASE']
+
+    TASK_QUEUE_CONFIG = __app_config['TASK_QUEUE']
 
     os.environ['CREDENTIALS_DB_USER'] = DB_CONFIG['USERNAME']
     os.environ['CREDENTIALS_DB_PASSWORD'] = DB_CONFIG['PASSWORD']
@@ -73,5 +75,12 @@ else:
         'CONNECTION_STRING': os.environ['EVENTHUB_CONNECTION_STRING'],
         'EVENTHUB_NAME': os.environ['EVENTHUB_NAME'],
         'SCHEMA_REGISTRY_FQNS': os.environ['EVENTHUB_SCHEMA_REGISTRY_FQNS'],
-        'SCHEMA_REGISTRY_GROUP': os.environ['EVENTHUB_SCHEMA_REGISTRY_GROUP']
+        'SCHEMA_REGISTRY_GROUP': os.environ['EVENTHUB_SCHEMA_REGISTRY_GROUP'],
+        'DATASTREAM_EVENTHUB_CONNECTION_STRING': os.environ['DATASTREAM_EVENTHUB_CONNECTION_STRING'],
+        'DATASTREAM_EVENTHUB_NAME': os.environ['DATASTREAM_EVENTHUB_NAME']
+    }
+
+    TASK_QUEUE_CONFIG = {
+        'CONNECTION_STRING': os.environ['TASK_QUEUE_CONNECTION_STRING'],
+        "QUEUE_NAME": os.environ['TASK_QUEUE_NAME']
     }

@@ -45,7 +45,7 @@ def send_records_to_eventhub(schema_file, records, eventhub_name):
     )
 
     # load schema string
-    with open(os.path.join(PROJ_LOC, "avro", schema_file), "r") as schema_fp:
+    with open(os.path.join(PROJ_LOC, "avro_modules", schema_file), "r") as schema_fp:
         schema_string = schema_fp.read()
     print(schema_string)
     # call async producer with schema, producer and serializer

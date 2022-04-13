@@ -1,6 +1,6 @@
 import json
 from application.fitbit.fitbit_upload import RECORD_PROCESSING
-from producer.send_record import send_record
+# from producer.send_record import send_record
 from producer.send_records_azure import send_records_to_eventhub
 
 from .utils.google_fit_parsers import *

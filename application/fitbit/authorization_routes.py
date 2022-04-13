@@ -1,7 +1,7 @@
 
 from flask import jsonify
 from flask import request, session, redirect
-from flask import Blueprint, g
+from flask import Blueprint
 from flask.wrappers import Response
 from flask_cors import CORS, cross_origin
 import requests

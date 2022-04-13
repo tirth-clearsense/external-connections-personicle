@@ -1,5 +1,5 @@
 import json
-from producer.send_record import send_record
+# from producer.send_record import send_record
 from producer.send_records_azure import send_records_to_eventhub
 
 from .utils.fitbit_parsers import *
@@ -16,7 +16,7 @@ RECORD_PROCESSING = {
     'sleep': fitbit_sleep_parser
 }
 
-SCHEMA_LOC = './avro'
+SCHEMA_LOC = './avro_modules'
 SCHEMA_MAPPING = {
     'heartrate': 'fitbit_stream_schema.avsc',
     'activity': 'event_schema.avsc',
@@ -69,6 +69,7 @@ def send_records_to_producer(personicle_user_id, records, stream_name, limit = N
 
 
 # TESTING METHOD FOR BULK UPLOAD OF FITBIT DATA
+# DEPRECATED - CONFLUENT KAFKA LIBRARY REMOVED FROM REQUIREMENTS
 def send_records_from_file_to_producer(filename, stream_name, limit = None):
     count = 0
     record_formatter = RECORD_PROCESSING[stream_name]

@@ -69,6 +69,9 @@ else:
     OURA_CONFIG = {
         'CLIENT_ID': os.environ['OURA_CLIENT_ID'],
         'CLIENT_SECRET': os.environ['OURA_CLIENT_SECRET'],
+        'REDIRECT_URI': os.environ['OURA_REDIRECT_URI'],
+        'TOKEN_URL': os.environ['OURA_TOKEN_URL'],
+        'AUTH_URL': os.environ['OURA_AUTH_URL']
     }
 
     IOS_APP_CONFIG = {
@@ -86,5 +89,7 @@ else:
 
     TASK_QUEUE_CONFIG = {
         'CONNECTION_STRING': os.environ['TASK_QUEUE_CONNECTION_STRING'],
-        "QUEUE_NAME": os.environ['TASK_QUEUE_NAME']
+        "QUEUE_NAME": os.environ['TASK_QUEUE_NAME'],
+        'QUEUE_NAME_OURA': os.environ['TASK_QUEUE_NAME_OURA'],
+        'CONNECTION_STRING_OURA': os.environ['TASK_QUEUE_CONNECTION_STRING_OURA'],
     }

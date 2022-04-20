@@ -26,7 +26,7 @@ if int(os.environ.get("INGESTION_PROD", '0')) != 1:
     FITBIT_CONFIG = __app_config['FITBIT']
     IOS_APP_CONFIG = __app_config['IOS_APP']
     GOOGLE_FIT_CONFIG = __app_config['GOOGLE_FIT']
-
+    OURA_CONFIG = __app_config['OURA']
     KAFKA_CONFIG = __app_config['KAFKA']
 
     EVENTHUB_CONFIG = __app_config['EVENTHUB']
@@ -65,6 +65,10 @@ else:
         'API_ENDPOINT': os.environ['GOOGLE_FIT_API_ENDPOINT'],
         'TOKEN_URL': os.environ['GOOGLE_FIT_TOKEN_URL'],
         'SECRET_JSON': "config_json/google_secret.json"
+    }
+    OURA_CONFIG = {
+        'CLIENT_ID': os.environ['OURA_CLIENT_ID'],
+        'CLIENT_SECRET': os.environ['OURA_CLIENT_SECRET'],
     }
 
     IOS_APP_CONFIG = {

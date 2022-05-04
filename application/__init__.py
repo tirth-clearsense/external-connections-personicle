@@ -13,7 +13,7 @@ import pprint
 # LOG = logging.getLogger()
 
 def create_app():
-    from . import models, fitbit, ios_healthkit, google_fit,okta_authenticate
+    from . import models, fitbit, ios_healthkit, google_fit, oura, okta_authenticate
     
     app = Flask(__name__)
     CORS(app)
@@ -62,6 +62,7 @@ def create_app():
     fitbit.init_app(app)
     ios_healthkit.init_app(app)
     google_fit.init_app(app)
+    oura.init_app(app)
     print("application object created")
     
     # services.init_app(app)

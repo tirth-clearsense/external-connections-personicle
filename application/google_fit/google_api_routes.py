@@ -12,6 +12,7 @@ from datetime import datetime
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+from sqlalchemy import true
 from application.okta.helpers import  is_authorized
 from application.utils.user_credentials_manager import add_access_token, verify_user_connection
 from application.config import GOOGLE_FIT_CONFIG, PROJ_LOC, HOST_CONFIG
@@ -68,10 +69,11 @@ def google_fit_connection():
             success = False
         result = jsonify(resp)
         return result
+    print("hereeee")
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         os.path.join(PROJ_LOC, GOOGLE_FIT_CONFIG['SECRET_JSON']),
         scopes=APP_SCOPE)
-
+    print("heeereee 2")
     # Indicate where the API server will redirect the user after the user completes
     # the authorization flow. The redirect URI is required. The value must exactly
     # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
@@ -83,19 +85,25 @@ def google_fit_connection():
     authorization_url, state = flow.authorization_url(
         access_type='offline', include_granted_scopes='true', enable_reauth_refresh='true')
 
-    # print(authorization_url)
+    print(authorization_url)
+    print("state")
+    print(state)
     # Enable offline access so that you can refresh an access token without
     # re-prompting the user for permission. Recommended for web server apps.
         
     session['state'] = state
     # Enable incremental authorization. Recommended as a best practice.
-
+    print(session)
+    session.modified = True
     return redirect(authorization_url)
 
 @google_API_routes.route("/google-fit/oauth/access_token/", methods=['GET'])
 def get_access_token():
+    print("holaaa")
+    print(session)
     user_id = session.get("user_id", None)
     personicle_token = session.get("personicle_token", None)
+    # user_id='00u3sfiunsmoyyiG35d7'
     if user_id is None:
         return Response("User not logged in", 401)
     error_resp = request.args.get("error", None)
@@ -116,12 +124,13 @@ def get_access_token():
     flow.redirect_uri = HOST_CONFIG['HOST_ADDRESS'] + GOOGLE_FIT_CONFIG['REDIRECT_URL']
 
     flow.fetch_token(authorization_response=auth_response)
-
+   
     # Store the credentials in the session.
     # ACTION ITEM for developers:
     #     Store user's access and refresh tokens in your data store if
     #     incorporating this code into your real app.
     credentials = flow.credentials
+    print("credentials")
     session['credentials'] = {
         'token': credentials.token,
         'refresh_token': credentials.refresh_token,

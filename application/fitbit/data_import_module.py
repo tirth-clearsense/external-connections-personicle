@@ -156,6 +156,10 @@ def initiate_fitbit_data_import(personicle_user_id):
                 }
     if status:
         user_record.last_accessed_at = datetime.utcnow()
+    user_connection = ExternalConnections.query.filter_by(userId=personicle_user_id, service='fitbit').all()
+    user_connection.status = 'connected'
+    db.session.update(user_connection)
+    db.session.commit()
     db.session.commit()
     return status, response
 

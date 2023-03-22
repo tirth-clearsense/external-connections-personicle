@@ -39,6 +39,7 @@ if int(os.environ.get("INGESTION_PROD", '0')) != 1:
     os.environ['CREDENTIALS_DB_PASSWORD'] = DB_CONFIG['PASSWORD']
     os.environ['CREDENTIALS_DB_HOST'] = DB_CONFIG['HOST']
     os.environ['CREDENTIALS_DB_NAME'] = DB_CONFIG['NAME']
+    
 else:
     HOST_CONFIG = {
         'HOST_ADDRESS': os.environ['INGESTION_HOST_ADDRESS']

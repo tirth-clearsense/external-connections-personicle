@@ -148,7 +148,10 @@ def initiate_google_fit_data_import(personicle_user_id, personicle_token, *args,
         LOG.error(e)
 
         return {"success": False, "message": "Error while sending data download request"}
-
+    user_connection = ExternalConnections.query.filter_by(userId=personicle_user_id, service='google-fit').all()
+    user_connection.status = 'connected'
+    db.session.update(user_connection)
+    db.session.commit()
     return {"success": True, "message": "Successfully created download request for google-fit"}
 
     # session_status, num_sessions = google_fit_sessions_import(personicle_user_id, google_fit_user_id, user_record.access_token, last_accessed_at, google_fit_oauth_config)

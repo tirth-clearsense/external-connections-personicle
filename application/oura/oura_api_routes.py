@@ -11,7 +11,7 @@ from datetime import datetime
 from application.utils.user_credentials_manager import add_access_token, verify_user_connection
 from application.models.base import db
 from .oura_import_module import initiate_oura_data_import
-
+from application.models.external_connections import ExternalConnections
 oura_routes = Blueprint("oura_routes", __name__)
 LOG = logging.getLogger(__name__)
 
@@ -30,6 +30,8 @@ def oura_connection():
 
     if verify_user_connection(personicle_user_id=session['user_id'], connection_name='oura'):
         LOG.info("User {} has active access token for oura".format(session['user_id']))
+        # user_records = ExternalConnections.query.filter_by(userId=session['user_id'], service="oura").all()
+        # print(user_records)
         try:
             resp = initiate_oura_data_import(user_id, personicle_access_token)
             success= True
@@ -55,6 +57,7 @@ def get_code():
         print("Redirect url: {}".format(HOST_CONFIG['HOST_ADDRESS'] + OURA_CONFIG['REDIRECT_URL']))
         session['request_sent'] = True
         print("request sent")
+        
         return redirect("{}?client_id={}&redirect_uri={}&scope={}&response_type=code".format(OURA_CONFIG['AUTH_URL'],
                 OURA_CONFIG['CLIENT_ID'] ,HOST_CONFIG['HOST_ADDRESS'] + OURA_CONFIG['REDIRECT_URL'], scopes))
     return "Already connected"

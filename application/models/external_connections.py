@@ -29,7 +29,7 @@ class ExternalConnections(db.Model):
     # optional fields
     external_user_id = db.Column(db.String(50))
     refresh_token = db.Column(db.String(500))
-
+    status = db.Column(db.String(500))
     # usage fields
     last_accessed_at = db.Column(db.DateTime, nullable=True)
     scope=db.Column(db.String(500), nullable=True)

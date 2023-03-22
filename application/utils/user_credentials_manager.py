@@ -27,6 +27,7 @@ def add_access_token(personicle_user_id, **kwargs):
                                         created_at=kwargs['created_at'], external_user_id=kwargs.get('external_user_id', None), refresh_token=kwargs.get("refresh_token", None))
     # check if user already exists
     user_records = ExternalConnections.query.filter_by(userId=personicle_user_id, service=kwargs['service_name']).all()
+    print(user_records)
     if len(user_records) > 0:
     # Update the user record
         assert len(user_records) == 1, "Duplicate records {} found for user: {}".format(kwargs['service_name'], personicle_user_id)
